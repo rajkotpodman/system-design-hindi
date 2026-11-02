@@ -52,6 +52,7 @@ A **distributed key-value store** partitions data across multiple servers and mu
     <p align="center">
     <img src="./images/server-down.png"  alt="Server down" width="400">
     </p>
+    
 - If we choose CP system, we must block all write operations to n1 and n2 to avoid data inconsistency.
 - If we choose AP system, the system keeps accepting reads, even though it might return stale data. 
 For writes, n1 and n2 keep accepting writes,
@@ -86,6 +87,7 @@ Since data is replicated at multiple nodes, it must be synchronized across repli
     <p align="center">
     <img src="./images/quorum-consensus.png"   alt="Quorum consensus" width="400">
     </p>
+    
     - If R = 1 and W = N, the system is optimized for a fast read.
     - If W = 1 and R = N, the system is optimized for fast write.
     - If W + R > N, strong consistency is guaranteed (Usually N = 3, W = R = 2).
