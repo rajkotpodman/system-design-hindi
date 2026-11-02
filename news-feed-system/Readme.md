@@ -50,7 +50,7 @@ The design includes two main flows:
 5. **Fanout Service:** Propagates the post to friends’ news feeds in the cache.
 6. **Notification Service:** Sends notifications to friends.
 
-    <img src="./images/feed-publishing.png" alt="Feed Publishing" width="300">
+       <img src="./images/feed-publishing.png" alt="Feed Publishing" width="300">
 
 ---
 
