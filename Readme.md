@@ -23,12 +23,18 @@ Check the notes here: https://pagefy.io/system-design-interview
  * [Chapter 14 - Design YouTube](./14.%20Youtube/)
  * [Chapter 15 - Design Google Drive](./15.%20Google%20Drive/)
  * [Chapter 16 - Proximity Service](./16.%20Proximity%20Service/)
-
  * [Chapter 17 - Nearby Friends](./17.%20Nearby%20Friends/)
-
+ * [Chapter 18 - Design Google Maps](./18.%20Google%20Maps/)
+ * [Chapter 19 - Distributed Message Queue](./19.%20Distributed%20Message%20Queue/)
+ * [Chapter 20 - Metrics Monitoring and Alerting System](./20.%20Metrics%20Monitoring%20and%20Alerting%20System/)
+ * [Chapter 21 - Ad Click Event Aggregation](./21.%20Ad%20Click%20Event%20Aggregation/)
  * [Chapter 22 - Hotel Reservation System](./22.%20Hotel%20Reservation%20System/)
-
-
+ * [Chapter 23 - Distributed Email Service](./23.%20Distributed%20Email%20Service/)
+ * [Chapter 24 - S3-like Object Storage](./24.%20S3-like%20Object%20Storage/)
+ * [Chapter 25 - Real-time Gaming Leaderboard](./25.%20Real-time%20Gaming%20Leaderboard/)
+ * [Chapter 26 - Payment System](./26.%20Payment%20System/)
+ * [Chapter 27 - Digital Wallet](./27.%20%20Digital%20Wallet/)
+ * [Chapter 28 - Stock Exchange](./28.%20Stock%20Exchange/)
 
 
 # Additonal Resources
