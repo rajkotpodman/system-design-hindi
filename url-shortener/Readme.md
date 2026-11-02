@@ -100,7 +100,7 @@ Convert ID `2009215674938` to Base 62:
    - Convert the ID to `shortURL` using Base 62.
    - Store the `<id, shortURL, longURL>` mapping in the database.
 
-        <img src="./images/url-shortening-flow.png" alt="URL Shortening" width="400">
+        <img src="./images/url-shortening-flow.png" alt="URL Shortening" width="500">
 
 
 ---
