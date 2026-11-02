@@ -55,7 +55,6 @@ redis_data/
 
 # Node & Frontend
 node_modules/
-package-lock.json
 docs/.vitepress/dist/
 docs/.vitepress/cache/
 .vitepress/dist/
