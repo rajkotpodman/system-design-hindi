@@ -57,6 +57,9 @@ YouTube is a massive video streaming platform supporting video uploads, playback
   2. Update video metadata in the database.
 
 - **Video Upload (Steps):**
+
+    &nbsp;&nbsp;&nbsp;&nbsp; <img src="./images/video-uploading-flow.png" alt="Video Upload Flow" width="400">
+
     - [1] Videos are uploaded to blob storage. 
     - [2] Transcoding servers convert videos to multiple formats.
     - [3] One trasncoding is complete, following two steps are exectued in parallel.
@@ -66,7 +69,6 @@ YouTube is a massive video streaming platform supporting video uploads, playback
     - [3b.1] Completion handlers update metadata and inform users. 
 
 
-        <img src="./images/video-uploading-flow.png" alt="Video Upload Flow" width="400">
 
 
 - **Metadata Upload (Steps):**
@@ -137,7 +139,7 @@ contains 3 queues and a task scheduler.
     - Running queue: contains  currently running tasks and workers running the tasks.
     - Task scheduler: picks the optimal task/worker, and instructs the chosen task worker to execute the job.
 
-    <img src="./images/resource-manager.png" alt="Resource Manager" width="400">
+        <img src="./images/resource-manager.png" alt="Resource Manager" width="400">
 
 4. **Task Workers:** Perform transcoding and other operations.
     - Different task workers may run different tasks 
