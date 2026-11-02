@@ -2,6 +2,7 @@
 # [System Design Interview - An Insider's Guide (Vol 1)](https://bytebytego.com/courses/system-design-interview)
 These notes are based on the System Design Interview books - [Vol 1 2nd Ed](https://www.goodreads.com/book/show/54109255-system-design-interview-an-insider-s-guide) 
 
+Check the notes here: https://pagefy.io 
 
 **Note:** These notes are a work in progress. 
 
