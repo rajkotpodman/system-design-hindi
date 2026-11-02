@@ -1,0 +1,27 @@
+{
+  "name": "system-design-hindi",
+  "version": "1.0.0",
+  "description": "Complete 28-Chapter System Design Guide in Smart Tech-Hinglish with Live Interactive Simulators and 180+ Languages Support",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rajkotpodman/system-design-hindi.git"
+  },
+  "homepage": "https://rajkotpodman.github.io/system-design-hindi/",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "docs:dev": "vitepress dev docs --port 5173",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "jigsi_karia",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "vitepress": "^1.6.4"
+  }
+}

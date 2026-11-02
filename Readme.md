@@ -1,97 +1,1034 @@
+# ⚡ System Design Interview — सम्पूर्ण मास्टर गाइड (हिन्दी / Tech-Hinglish)
 
-# [System Design Interview - An Insider's Guide (Vol 1 and 2)](https://bytebytego.com/courses/system-design-interview)
-These notes are based on the System Design Interview books - [Vol 1 and Vol 2 2nd Ed](https://www.goodreads.com/book/show/54109255-system-design-interview-an-insider-s-guide) 
+> **वास्तुकला एवं संकलन:** jigsi_karia
+> **मूल स्रोत संदर्भ:** *System Design Interview – An Insider's Guide (Volume 1 & 2)*
+> **अनुशंसित दृष्टिकोण (Recommended Approach):** **Smart Tech-Hinglish**
+> - **तकनीकी शब्दावली (Core Technical Terms) मूल अंग्रेजी में:** *Latency, Throughput, Consistent Hashing, Token Bucket, Read-Heavy vs Write-Heavy, Replication Lag, Partition Tolerance, Write-Ahead Log, Merkle Trees, B+ Tree, Gossip Protocol, LSM-Tree, Vector Clocks, Split-Brain* आदि।
+> - **व्याख्या, आंतरिक आर्किटेक्चर और व्यापारिक निर्णय (Explanations, Flow & Trade-offs) प्रामाणिक, सरल एवं व्यावहारिक हिन्दी में।**
 
-Check the notes here: https://pagefy.io/system-design/system-design-interview-by-alex-xu
+---
 
-**Note:** These notes are a work in progress. 
+## 📑 विस्तृत विषय-सूची (Master Table of Contents)
 
+1. [🚀 सिस्टम डिज़ाइन का दर्शन एवं 4-चरणीय इंटरव्यू फ्रेमवर्क](#-सिस्टम-डिज़ाइन-का-दर्शन-एवं-4-चरणीय-इंटरव्यू-फ्रेमवर्क)
+   - [4-चरणीय समय प्रबंधन (4-Step Time Allocation)](#4-चरणीय-समय-प्रबंधन)
+   - [लाइव मॉक इंटरव्यू संवाद (Live Mock Interview Dialogue)](#लाइव-मॉक-इंटरव्यू-संवाद)
+2. [📐 इंटरव्यू में काम आने वाले Numbers (Back-of-the-envelope Cheat Sheet)](#-इंटरव्यू-में-काम-आने-वाले-numbers-back-of-the-envelope-cheat-sheet)
+   - [Jeff Dean के हार्डवेयर एवं नेटवर्क लेटेंसी आंकड़े](#jeff-dean-के-हार्डवेयर-एवं-नेटवर्क-लेटेंसी-आंकड़े)
+   - [Availability SLA और वार्षिक डाउनटाइम तालिका](#availability-sla-और-वार्षिक-डाउनटाइम-तालिका)
+   - [क्षमता, थ्रूपुट और स्टोरेज के बुनियादी सूत्र](#क्षमता-थ्रूपुट-और-स्टोरेज-के-बुनियादी-सूत्र)
+3. [🧱 डिस्ट्रीब्यूटेड सिस्टम्स के बुनियादी स्तंभ (Core Distributed Architecture Primitives)](#-डिस्ट्रीब्यूटेड-सिस्टम्स-के-बुनियादी-स्तंभ)
+   - [CAP प्रमेय और PACELC प्रमेय का व्यावहारिक विश्लेषण](#cap-प्रमेय-और-pacelc-प्रमेय)
+   - [डेटाबेस चयन मार्गदर्शिका (RDBMS vs NoSQL vs NewSQL vs TSDB)](#डेटाबेस-चयन-मार्गदर्शिका)
+   - [कैशिंग रणनीतियाँ एवं निष्कासन नीतियां (Caching Strategies & Eviction Policies)](#कैशिंग-रणनीतियाँ-एवं-निष्कासन-नीतियां)
+   - [लोड बैलेंसिंग एवं रिवर्स प्रॉक्सी (Layer 4 vs Layer 7)](#लोड-बैलेंसिंग-एवं-रिवर्स-प्रॉक्सी)
+   - [डेटाबेस शार्डिंग एवं रेप्लिकेशन (Sharding & Replication)](#डेटाबेस-शार्डिंग-एवं-रेप्लिकेशन)
+   - [माइक्रोसर्विस रेजिलिएंस: सर्किट ब्रेकर, सागा एवं आउटबॉक्स पैटर्न](#माइक्रोसर्विस-रेजिलिएंस-पैटर्न्स)
+   - [डिस्ट्रीब्यूटेड कॉन्सेन्सस एवं लीडर इलेक्शन (Raft vs Paxos vs Zab)](#डिस्ट्रीब्यूटेड-कॉन्सेन्सस-एवं-लीडर-इलेक्शन)
+   - [डेटाबेस इंडेक्सिंग की आंतरिक कार्यप्रणाली (B+ Tree, LSM-Tree, Inverted Index)](#डेटाबेस-इंडेक्सिंग-की-आंतरिक-कार्यप्रणाली)
+4. [📚 सभी 28 अध्यायों का गहन एवं विस्तृत तकनीकी विश्लेषण (All 28 Chapters Deep Dive)](#-सभी-28-अध्यायों-का-गहन-एवं-विस्तृत-तकनीकी-विश्लेषण)
+   - [Ch 01: विस्तृत आर्किटेक्चर विश्लेषण](#ch-01)
+   - [Ch 02: विस्तृत आर्किटेक्चर विश्लेषण](#ch-02)
+   - [Ch 03: विस्तृत आर्किटेक्चर विश्लेषण](#ch-03)
+   - [Ch 04: विस्तृत आर्किटेक्चर विश्लेषण](#ch-04)
+   - [Ch 05: विस्तृत आर्किटेक्चर विश्लेषण](#ch-05)
+   - [Ch 06: विस्तृत आर्किटेक्चर विश्लेषण](#ch-06)
+   - [Ch 07: विस्तृत आर्किटेक्चर विश्लेषण](#ch-07)
+   - [Ch 08: विस्तृत आर्किटेक्चर विश्लेषण](#ch-08)
+   - [Ch 09: विस्तृत आर्किटेक्चर विश्लेषण](#ch-09)
+   - [Ch 10: विस्तृत आर्किटेक्चर विश्लेषण](#ch-10)
+   - [Ch 11: विस्तृत आर्किटेक्चर विश्लेषण](#ch-11)
+   - [Ch 12: विस्तृत आर्किटेक्चर विश्लेषण](#ch-12)
+   - [Ch 13: विस्तृत आर्किटेक्चर विश्लेषण](#ch-13)
+   - [Ch 14: विस्तृत आर्किटेक्चर विश्लेषण](#ch-14)
+   - [Ch 15: विस्तृत आर्किटेक्चर विश्लेषण](#ch-15)
+   - [Ch 16: विस्तृत आर्किटेक्चर विश्लेषण](#ch-16)
+   - [Ch 17: विस्तृत आर्किटेक्चर विश्लेषण](#ch-17)
+   - [Ch 18: विस्तृत आर्किटेक्चर विश्लेषण](#ch-18)
+   - [Ch 19: विस्तृत आर्किटेक्चर विश्लेषण](#ch-19)
+   - [Ch 20: विस्तृत आर्किटेक्चर विश्लेषण](#ch-20)
+   - [Ch 21: विस्तृत आर्किटेक्चर विश्लेषण](#ch-21)
+   - [Ch 22: विस्तृत आर्किटेक्चर विश्लेषण](#ch-22)
+   - [Ch 23: विस्तृत आर्किटेक्चर विश्लेषण](#ch-23)
+   - [Ch 24: विस्तृत आर्किटेक्चर विश्लेषण](#ch-24)
+   - [Ch 25: विस्तृत आर्किटेक्चर विश्लेषण](#ch-25)
+   - [Ch 26: विस्तृत आर्किटेक्चर विश्लेषण](#ch-26)
+   - [Ch 27: विस्तृत आर्किटेक्चर विश्लेषण](#ch-27)
+   - [Ch 28: विस्तृत आर्किटेक्चर विश्लेषण](#ch-28)
+5. [🎮 लाइव इंटरएक्टिव सिम्युलेटर्स गाइड (Interactive Simulators & Localhost)](#-लाइव-इंटरएक्टिव-सिम्युलेटर्स-गाइड)
+6. [📖 संदर्भ एवं इंजीनियरिंग ब्लॉग्स (Curated Engineering Resources)](#-संदर्भ-एवं-इंजीनियरिंग-ब्लॉग्स)
 
- * [Chapter 1 - Scale From Zero To Millions Of Users](./01.%20Scaling/)
- * [Chapter 2 - Back-of-the-envelope Estimation](./02.%20Back%20Of%20the%20Envelope%20Estimation/)
- * [Chapter 3 - A Framework For System Design Interviews](./03.%20System%20Design%20Framework/)
- * [Chapter 4 - Design A Rate Limiter](./04.%20Rate%20Limiter//)
- * [Chapter 5 - Design Consistent Hashing](./05.%20Consistent%20Hashing/)
- * [Chapter 6 - Design A Key-Value Store](./06.%20Key-Value%20Store/)
- * [Chapter 7 - Design A Unique ID Generator In Distributed Systems](./07.%20Unique-Id%20Generator/)
- * [Chapter 8 - Design A URL Shortener](./08.%20URL%20Shortener/)
- * [Chapter 9 - Design A Web Crawler](./09.%20Web%20Crawler/)
- * [Chapter 10 - Design A Notification System](./10.%20Notification%20System/)
- * [Chapter 11 - Design A News Feed System](./11.%20News%20Feed%20System/)
- * [Chapter 12 - Design A Chat System](./12.%20Chat%20System/)
- * [Chapter 13 - Design A Search Autocomplete System](./13.%20Search%20Autocomplete/)
- * [Chapter 14 - Design YouTube](./14.%20Youtube/)
- * [Chapter 15 - Design Google Drive](./15.%20Google%20Drive/)
- * [Chapter 16 - Proximity Service](./16.%20Proximity%20Service/)
- * [Chapter 17 - Nearby Friends](./17.%20Nearby%20Friends/)
- * [Chapter 18 - Design Google Maps](./18.%20Google%20Maps/)
- * [Chapter 19 - Distributed Message Queue](./19.%20Distributed%20Message%20Queue/)
- * [Chapter 20 - Metrics Monitoring and Alerting System](./20.%20Metrics%20Monitoring%20and%20Alerting%20System/)
- * [Chapter 21 - Ad Click Event Aggregation](./21.%20Ad%20Click%20Event%20Aggregation/)
- * [Chapter 22 - Hotel Reservation System](./22.%20Hotel%20Reservation%20System/)
- * [Chapter 23 - Distributed Email Service](./23.%20Distributed%20Email%20Service/)
- * [Chapter 24 - S3-like Object Storage](./24.%20S3-like%20Object%20Storage/)
- * [Chapter 25 - Real-time Gaming Leaderboard](./25.%20Real-time%20Gaming%20Leaderboard/)
- * [Chapter 26 - Payment System](./26.%20Payment%20System/)
- * [Chapter 27 - Digital Wallet](./27.%20%20Digital%20Wallet/)
- * [Chapter 28 - Stock Exchange](./28.%20Stock%20Exchange/)
+---
 
+## 🚀 सिस्टम डिज़ाइन का दर्शन एवं 4-चरणीय इंटरव्यू फ्रेमवर्क
 
-# Additonal Resources
+सिस्टम डिज़ाइन इंटरव्यू किसी भी तकनीकी कंपनी (Google, Meta, Amazon, Microsoft, Uber, Netflix) में केवल यह जांचने के लिए नहीं होता कि आपको तकनीकों के नाम पता हैं या नहीं, बल्कि यह परखा जाता है कि आप बड़े पैमाने पर अनिश्चितता (Ambiguity) को कैसे संरचना में बदलते हैं और तकनीकी समझौते (Trade-offs) कैसे लेते हैं।
 
-### Rate Limiting
-- [Circuit Breaker Algorithm](https://martinfowler.com/bliki/CircuitBreaker.html)
-- [Uber Rate Limiter](https://github.com/uber-go/ratelimit/blob/master/ratelimit.go)
+### 4-चरणीय समय प्रबंधन
 
+```
++--------------------------------------------------------------------------------+
+| चरण 1: समस्या को समझना और डिज़ाइन का दायरा तय करना (Scope & Clarifications)   |
+| समय: 00 से 05 मिनट | लक्ष्य: Functional/Non-Functional आवश्यकताएं, DAU, SLAs    |
++--------------------------------------------------------------------------------+
+                                        |
+                                        v
++--------------------------------------------------------------------------------+
+| चरण 2: हाई-लेवल डिज़ाइन प्रस्तावित करना और सहमति पाना (High-Level Architecture) |
+| समय: 05 से 15 मिनट | लक्ष्य: REST APIs, Core Components, DB Entities, Data Flow|
++--------------------------------------------------------------------------------+
+                                        |
+                                        v
++--------------------------------------------------------------------------------+
+| चरण 3: महत्वपूर्ण घटकों का डीप-डाइव (Deep Dive into Core Bottlenecks)           |
+| समय: 15 से 35 मिनट | लक्ष्य: Sharding, Caching, Concurrency, Failure Scenarios|
++--------------------------------------------------------------------------------+
+                                        |
+                                        v
++--------------------------------------------------------------------------------+
+| चरण 4: रैप-अप, निष्कर्ष और भविष्य की स्केलिंग (Wrap-Up & Observability)         |
+| समय: 35 से 45 मिनट | लक्ष्य: SPOF, Metrics, Tracing, Failover, Trade-offs     |
++--------------------------------------------------------------------------------+
+```
 
-### Consistent Hashing
-- [Consistent Hashing](https://tom-e-white.com/2007/11/consistent-hashing.html)
-- [CS168: Introduction and Consistent Hashing:]( http://theory.stanford.edu/~tim/s16/l/l1.pdf)
-- [Apache Cassandra](http://www.cs.cornell.edu/Projects/ladis2009/papers/Lakshman-ladis2009.PDF)
-- [Scaling Discord](https://blog.discord.com/scaling-elixir-f9b8e1e7c29b)
-- [Google Maglev](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/44824.pdf)
+### लाइव मॉक इंटरव्यू संवाद
 
+नीचे एक आदर्श इंटरव्यू संवाद का उदाहरण दिया गया है जिससे समझ आता है कि सीनियर इंजीनियर इंटरव्यूअर से कैसे संवाद करते हैं:
 
-### Key-Value Store
-- [Amazon Dynamo](https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf)
-- [Cassandra Architecture](https://docs.datastax.com/en/archived/cassandra/3.0/cassandra/architecture/archIntro.html)
-- [Google BigTable Architecture](https://static.googleusercontent.com/media/research.google.com/en//archive/bigtable-osdi06.pdf)
-- [Amazon Dynamo DB Internals](https://www.allthingsdistributed.com/2007/10/amazons_dynamo.html)
-- [Design Patterns in Amazon Dynamo DB](https://www.youtube.com/watch?v=HaEPXoXVf2k)
-- [Internals of Amazon Dynamo DB](https://www.youtube.com/watch?v=yvBR71D0nAQ)
+> **उम्मीदवार (Candidate):** *"क्या हम केवल URL छोटा करने और रीडायरेक्ट करने की कोर फंक्शनैलिटी पर ध्यान दें, या एनालिटिक्स (क्लिक काउंट, यूजर लोकेशन) भी इस स्कोप में शामिल है?"*
+> 
+> **इंटरव्यूअर (Interviewer):** *"मुख्य रूप से छोटा URL जनरेट करना और रीडायरेक्ट करना प्राथमिक है, किंतु एनालिटिक्स के लिए क्लिक ट्रैकिंग का प्रावधान भी होना चाहिए।"*
+> 
+> **उम्मीदवार:** *"सिस्टम का स्केल क्या मानकर चलें? कितने डेली एक्टिव यूजर्स और प्रति सेकंड कितने नए URLs जनरेट होंगे?"*
+> 
+> **इंटरव्यूअर:** *"प्रति दिन 100 मिलियन नए URLs जनरेट होते हैं और रीड-टू-राइट अनुपात 100:1 है।"*
+> 
+> **उम्मीदवार:** *"बहुत बढ़िया। इसका मतलब राइट QPS लगभग 1,160 और रीड QPS 116,000 होगा। यह भारी Read-Heavy सिस्टम है, इसलिए हमें एक आक्रामक कैशिंग लेयर (Redis LRU Cache) और Base62 एन्कोडिंग के साथ Snowflake 64-bit ID जनरेशन चुनना चाहिए ताकि कोलिजन-मुक्त O(1) कन्वर्जन मिल सके। क्या हम इस हाई-लेवल डिज़ाइन पर आगे बढ़ें?"*
+> 
+> **इंटरव्यूअर:** *"बिल्कुल सही दिशा है, कृपया आगे बढ़ें।"*
 
+---
 
-### Unique-ID Generator
-- [Ticket Servers: Distributed Unique Primary Keys on the Cheap](https://code.flickr.net/2010/02/08/ticket-servers-distributed-unique-primary-keys-on-the-cheap)
-- [Snowflake](https://blog.twitter.com/engineering/en_us/a/2010/announcing-snowflake.html)
+## 📐 इंटरव्यू में काम आने वाले Numbers (Back-of-the-envelope Cheat Sheet)
 
+### Jeff Dean के हार्डवेयर एवं नेटवर्क लेटेंसी आंकड़े
 
-### Web Crawler
-- [Web Crawling](http://infolab.stanford.edu/~olston/publications/crawling_survey.pdf)
-- [Google Dynamic Rendering](https://developers.google.com/search/docs/guides/dynamic-rendering)
+| हार्डवेयर / नेटवर्क ऑपरेशन | लेटेंसी (Time) | मानव पैमाना (Scaled: 1ns = 1 sec) | इंजीनियरिंग महत्व |
+|---|---|---|---|
+| **L1 CPU Cache Reference** | 0.5 ns | 0.5 सेकंड | अत्यधिक तेज़ सीपीयू रजिस्टर्स |
+| **Branch Mispredict** | 5 ns | 5 सेकंड | पाइपलाइन इनवैलिडेशन |
+| **L2 CPU Cache Reference** | 7 ns | 7 सेकंड | L1 से 14x धीमा |
+| **Mutex Lock/Unlock** | 25 ns | 25 सेकंड | थ्रेड सिंक्रोनाइज़ेशन ओवरहेड |
+| **Main Memory (RAM) Access** | 100 ns | 1.6 मिनट | कैश मिस होने पर मुख्य मेमोरी जुर्माना |
+| **1 MB सीक्वेंशियल रीड (RAM)** | 250,000 ns (250 µs) | 2.9 दिन | रैम में सीक्वेंशियल डेटा ट्रांसफर अत्यंत तीव्र |
+| **SSD Random Read (NVMe)** | 16,000 ns (16 µs) | 4.4 घंटे | रैम से लगभग 160x धीमा |
+| **1 MB सीक्वेंशियल रीड (NVMe SSD)** | 1,000,000 ns (1 ms) | 11.5 दिन | सीक्वेंशियल SSD राइट/रीड बहुत प्रभावी |
+| **समान डेटासेंटर में राउंड ट्रिप (RTT)** | 500,000 ns (0.5 ms) | 5.8 दिन | इंट्रा-डेटासेंटर RPC ओवरहेड |
+| **HDD Random Disk Seek** | 10,000,000 ns (10 ms) | 3.8 महीने | मैकेनिकल हेड मूवमेंट की भारी लेटेंसी |
+| **1 MB सीक्वेंशियल रीड (HDD)** | 20,000,000 ns (20 ms) | 7.6 महीने | रैंडम सीक से 50x बेहतर |
+| **सैन फ्रांसिस्को से लंदन नेटवर्क RTT** | 150,000,000 ns (150 ms) | 4.7 साल | प्रकाश की गति की भौतिक सीमा |
 
+### Availability SLA और वार्षिक डाउनटाइम तालिका
 
+| उपलब्धता (Availability SLA) | डाउनटाइम प्रति वर्ष (Downtime/Year) | डाउनटाइम प्रति माह (Downtime/Month) | डाउनटाइम प्रति दिन (Downtime/Day) |
+|---|---|---|---|
+| **99.0% (Two 9s)** | 3.65 दिन | 7.20 घंटे | 14.40 मिनट |
+| **99.9% (Three 9s)** | 8.76 घंटे | 43.80 मिनट | 1.44 मिनट |
+| **99.99% (Four 9s - उद्योग मानक)** | 52.56 मिनट | 4.38 मिनट | 8.64 सेकंड |
+| **99.999% (Five 9s - टेलीकॉम/बैंकिंग)** | 5.26 मिनट | 25.90 सेकंड | 0.86 सेकंड |
+| **99.9999% (Six 9s)** | 31.56 सेकंड | 2.59 सेकंड | 0.086 सेकंड |
 
-### Chat Systems
-- [How Discord stores billions of messages](https://discord.com/blog/how-discord-stores-billions-of-messages)
-- [Flannel: An Application-Level Edge Cache to Make Slack Scale](https://slack.engineering/flannel-an-application-level-edge-cache-to-make-slack-scale/)
+### क्षमता, थ्रूपुट और स्टोरेज के बुनियादी सूत्र
+- **थ्रूपुट सूत्र (QPS):** $\text{QPS} = \frac{\text{दैनिक कुल रिक्वेस्ट्स}}{86,400 \text{ सेकंड}} \approx \frac{\text{दैनिक रिक्वेस्ट्स}}{100,000}$
+- **पीक थ्रूपुट:** $\text{Peak QPS} = \text{Average QPS} \times 2$ (त्योहारों अथवा सेल्स में $\times 5$)
+- **80/20 नियम (Pareto Rule):** 20% लोकप्रिय डेटा 80% ट्रैफिक को आकर्षित करता है। रैम कैश में केवल 20% हॉट डेटा रखना 80% हिट रेशियो सुनिश्चित करता है।
+- **स्टोरेज 5 वर्ष:** $\text{Storage (5 Years)} = \text{Write QPS} \times \text{Request Size (Bytes)} \times 86,400 \times 365 \times 5$
 
+---
 
-### Search Autocomplete
-- [How We Built Prefixy](https://medium.com/@prefixyteam/how-we-built-prefixy-a-scalable-prefix-search-service-for-powering-autocomplete-c20f98e2eff1)
-- [Prefix Hash Tree](https://people.eecs.berkeley.edu/~sylvia/papers/pht.pdf)
+## 🧱 डिस्ट्रीब्यूटेड सिस्टम्स के बुनियादी स्तंभ
 
+### CAP प्रमेय और PACELC प्रमेय
+- **CAP Theorem:** किसी भी डिस्ट्रीब्यूटेड डेटा सिस्टम में जब नेटवर्क पार्टीशन ('P') होता है, तो सिस्टम को **Consistency ('C')** और **Availability ('A')** में से किसी एक को चुनना पड़ता है।
+  - **CP Systems:** डेटा की शुद्धता हेतु राइट्स ब्लॉक कर देना (उदा: Google Spanner, HBase, ZooKeeper)।
+  - **AP Systems:** उच्च उपलब्धता हेतु संभावित पुराना डेटा सर्व करना (उदा: Cassandra, DynamoDB, CouchDB)।
+- **PACELC Theorem:** सामान्य दिनों में (Else 'E') सिस्टम **Latency ('L')** और **Consistency ('C')** के बीच चुनाव करता है। (उदा: DynamoDB PA/EL है)।
 
-### Youtube
-- [YouTube Architecture](http://highscalability.com/youtube-architecture)
-- [YouTube scalability 2012](https://www.youtube.com/watch?v=w5WVu624fY8)
-- [Transcoding Videos at Scale](https://www.egnyte.com/blog/2018/12/transcoding-how-we-serve-videos-at-scale/)
-- [Facebook Video Broadcasting](https://engineering.fb.com/ios/under-the-hood-broadcasting-live-video-to-millions/)
-- [Netflix Video Encoding at Scale](https://netflixtechblog.com/high-quality-video-encoding-at-scale-d159db052746)
-- [Netflix Shot based encoding](https://netflixtechblog.com/optimized-shot-based-encodes-now-streaming-4b9464204830)
+### डेटाबेस चयन मार्गदर्शिका
 
+| श्रेणी | डेटाबेस उदाहरण | श्रेष्ठ उपयोगिता (Best Used For) | मुख्य सीमाएँ (Trade-offs) |
+|---|---|---|---|
+| **Relational (RDBMS)** | PostgreSQL, MySQL | जटिल रिलेशंस, फॉरेन कीज, ACID ट्रांजैक्शन्स, वित्तीय डेटा | हॉरिजॉन्टल राइट शार्डिंग अत्यंत जटिल |
+| **Key-Value Store** | Redis, DynamoDB, Memcached | यूजर सेशन्स, टोकन बकेट, कैशे, तेज़ $O(1)$ रीड/राइट | सीमित क्वेरी क्षमता, केवल की पर आधारित लुकअप |
+| **Wide-Column NoSQL** | Cassandra, ScyllaDB, Bigtable | विशाल टाइम-सीरीज़ डेटा, चैट हिस्ट्री, पेटाबाइट स्केल राइट्स | जटिल जॉइन्स का पूर्ण अभाव, डेटा डुप्लिकेशन |
+| **Document NoSQL** | MongoDB, Couchbase | लचीला स्कीमा, ई-कॉमर्स कैटलॉग, नेस्टेड JSON | मल्टी-डॉक्यूमेंट ACID ट्रांजैक्शन्स में लेटेंसी |
+| **Search Engine** | Elasticsearch, OpenSearch | फुल-टेक्स्ट सर्च, फजी सर्च, लॉग एनालिटिक्स | प्राइमरी सोर्स ऑफ ट्रुथ के रूप में अविश्वसनीय |
+| **Time-Series (TSDB)** | Prometheus, InfluxDB, TimescaleDB | सर्वर मेट्रिक्स, IoT सेंसर डेटा, फाइनेंशियल टिक डेटा | रैंडम अपडेट्स और डिलीट्स बहुत धीमे |
+| **Object Storage** | Amazon S3, MinIO, GCS | इमेजेस, वीडियोज, बैकअप्स, बड़े अनस्ट्रक्चर्ड ब्लॉक्स | अपेंड/मॉडिफाई नहीं किया जा सकता (Immutable) |
 
-### Google Drive
-- [Differential Synchronization](https://neil.fraser.name/writing/sync/)
-- [Differential Synchronization Video](https://www.youtube.com/watch?v=S2Hp_1jqpY8)
-- [How We’ve Scaled Dropbox](https://www.youtube.com/watch?v=PE4gwstWhmc&feature=youtu.be)
+### कैशिंग रणनीतियाँ एवं निष्कासन नीतियां
+1. **Cache-Aside (Lazy Loading):** ऐप पहले कैश चेक करता है; मिस होने पर डीबी से पढ़कर कैश भरता है।
+2. **Read-Through:** ऐप केवल कैश से बात करता है; कैश प्रोवाइडर स्वयं डीबी से फेच करता है।
+3. **Write-Through:** डेटा पहले कैश में और उसी ट्रांजैक्शन में डीबी में लिखा जाता है।
+4. **Write-Behind (Write-Back):** डेटा कैश में $O(1)$ में लिखा जाता है और बैकग्राउंड में असिंक्रोनस बैच में डीबी में फ्लश होता है।
+5. **निष्कासन नीतियां (Eviction Policies):** **LRU** (Least Recently Used), **LFU** (Least Frequently Used), **FIFO**।
+
+### लोड बैलेंसिंग एवं रिवर्स प्रॉक्सी
+- **Layer 4 (Transport Layer):** IP और TCP/UDP पोर्ट के आधार पर पैकेट रूटिंग (उदा: AWS NLB, HAProxy TCP मोड)। अल्ट्रा-हाई थ्रूपुट, कम CPU ओवरहेड।
+- **Layer 7 (Application Layer):** HTTP हेडर, कुकीज, URL पाथ के आधार पर रूटिंग (उदा: Nginx, Envoy, AWS ALB)। SSL Termination और स्मार्ट रूटिंग सक्षम।
+- **एल्गोरिदम:** Round Robin, Weighted Round Robin, Least Connections, IP Hash (Session Affinity)।
+
+### डेटाबेस शार्डिंग एवं रेप्लिकेशन
+- **शार्डिंग रणनीतियाँ:** Range-based Sharding (उदा: 1-1000 ID), Hash-based Sharding (`hash(key) % N`), Directory-based Sharding।
+- **शार्डिंग की चुनौतियाँ:** Cross-shard Joins, Re-sharding Overhead, Hotspot Celebrity Key (उदा: एक ही शार्ड पर अत्यधिक ट्रैफिक आना)।
+
+### माइक्रोसर्विस रेजिलिएंस पैटर्न्स
+- **सर्किट ब्रेकर (Circuit Breaker - Hystrix/Resilience4j):** जब कोई डाउनस्ट्रीम सर्विस फेल होने लगे, तो थ्रेड्स को ब्लॉक होने से बचाने के लिए कॉल्स को तुरंत 'Open' स्टेट में डालकर `Fallback` रिटर्न करना।
+- **सागा पैटर्न (Saga Pattern):** डिस्ट्रीब्यूटेड ट्रांजैक्शन्स के लिए Choreography vs Orchestration आधारित स्थानीय ट्रांजैक्शन्स और विफलता पर Compensating Transactions (रिवर्सल) चलाना।
+- **Transactional Outbox Pattern & CDC:** ड्यूल-राइट विसंगतियों से बचने के लिए उसी डेटाबेस ट्रांजैक्शन में `OUTBOX` टेबल में लिखना और Debezium द्वारा Kafka में पब्लिश करना।
+
+### डिस्ट्रीब्यूटेड कॉन्सेन्सस एवं लीडर इलेक्शन
+- **Raft Consensus:** लीडर इलेक्शन (Heartbeats & Election Timeouts), लॉग रेप्लिकेशन, और मेजॉरिटी कोरम ($N/2 + 1$) द्वारा विभाजित नेटवर्क (Split-Brain) से सुरक्षा।
+- **Paxos & Zab:** ZooKeeper (Zab) और Chubby (Paxos) द्वारा डिस्ट्रीब्यूटेड लॉकिंग और कॉन्फ़िगरेशन मैनेजमेंट।
+
+### डेटाबेस इंडेक्सिंग की आंतरिक कार्यप्रणाली
+| इंडेक्स प्रकार | आंतरिक संरचना (Data Structure) | श्रेष्ठ उपयोग (Best For) | समय जटिलता (Complexity) |
+|---|---|---|---|
+| **B+ Tree Index** | N-ary balanced tree (Leaf nodes linked) | रेंज क्वेरीज़ (`BETWEEN`), सॉर्टिंग, समानता | $O(\log N)$ रीड, $O(\log N)$ राइट |
+| **LSM-Tree Index** | MemTable (SkipList) + SSTables on disk | भारी राइट्स (Write-Heavy), टाइम-सीरीज़ | $O(1)$ राइट, $O(\log N)$ रीड |
+| **Hash Index** | Hash Table (Buckets) | केवल सटीक समानता (`WHERE id = 'xyz'`) | $O(1)$ औसत रीड/राइट |
+| **Inverted Index** | Posting Lists (Term -> Doc IDs) | फुल-टेक्स्ट सर्च, फजी सर्च, कीवर्ड लुकअप | $O(1)$ टर्म लुकअप |
+
+---
+
+## 📚 सभी 28 अध्यायों का गहन एवं विस्तृत तकनीकी विश्लेषण
+
+### Ch 01: Zero से Millions तक Scaling (Scale From Zero To Millions Of Users)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`01. Scale From Zero To Millions Of Users/Readme.hi.md`](./01.%20Scale%20From%20Zero%20To%20Millions%20Of%20Users/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+सिस्टम को 1 यूज़र से 10 मिलियन यूज़र्स तक स्केल करना। लक्ष्य: हाई अवेलेबिलिटी, लो लेटेंसी, और कोई सिंगल प्वाइंट ऑफ फेलियर (SPOF) न होना।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **DNS & CDN:** यूजर रिक्वेस्ट DNS से आईपी पाती है; स्टैटिक एसेट्स (इमेजेस, जेएस, सीएसएस) Cloudflare CDN से सर्व होते हैं।
+- **Load Balancer & Stateless Web Tier:** Nginx / ALB के पीछे मल्टीपल वेब सर्वर्स रन करते हैं। यूजर सेशन्स को लोकल मेमोरी के बजाय Redis Session Store में रखा जाता है।
+- **Database Master-Slave:** MySQL/PostgreSQL Primary पर Writes और 3 Read Replicas पर Reads।
+- **Async Workers & Queues:** भारी टास्क (ईमेल, इमेज रीसाइजिंग) को Kafka/RabbitMQ कतार में भेजना।
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **Replication Lag Management:** जब मास्टर से स्लेव पर डेटा सिंक होने में 300ms लगते हैं, तो यूजर प्रोफाइल अपडेट करने के तुरंत बाद 5 सेकंड तक रीड्स को सीधे Master DB से सर्व करना।
+- **Cache Stampede Prevention:** जब कोई हॉट की एक्सपायर होती है, तो 10,000 रिक्वेस्ट्स एक साथ डीबी पर न जाएं, इसके लिए Redis Mutex Lock (SETNX) या Probabilistic Early Expiration (XFetch) का उपयोग।
+- **Database Sharding:** यूजर आईडी के हैश पर डेटा को शार्ड करना (`user_id % num_shards`)।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+वर्टिकल स्केलिंग (Scale-up) की सख्त हार्डवेयर सीमाएं होती हैं और यह SPOF है। हॉरिजॉन्टल स्केलिंग (Scale-out) शुरुआत में जटिल लगती है किंतु लॉन्ग-टर्म में अत्यधिक लचीली और लागत-प्रभावी होती है।
+
+---
+
+### Ch 02: Back-of-the-envelope गणना का विज्ञान (Back-of-the-envelope Estimation)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`02. Back-of-the-envelope Estimation/Readme.hi.md`](./02.%20Back-of-the-envelope%20Estimation/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+सिस्टम आर्किटेक्चर तय करने से पहले थ्रूपुट (QPS), नेटवर्क बैंडविड्थ, स्टोरेज कैपेसिटी और रैम साइज का सटीक अनुमान लगाना।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **केस स्टडी: Twitter-like Platform (300M DAU, Read:Write = 100:1):**
+  - दैनिक ट्वीट्स: $300\text{M} \times 2 = 600,000,000$ ट्वीट्स/दिन।
+  - Write QPS: $\frac{600\text{M}}{86,400} \approx 7,000 \text{ QPS}$ (Peak: 14,000 QPS)।
+  - Read QPS: $7,000 \times 100 = 700,000 \text{ QPS}$ (Peak: 1.4 Million QPS)।
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **स्टोरेज गणना:** प्रति ट्वीट 300 Bytes टेक्स्ट + 20% ट्वीट्स में 1 MB मीडिया।
+  - मीडिया स्टोरेज: $600\text{M} \times 0.2 \times 1\text{ MB} = 120\text{ TB/दिन}$।
+  - 5 साल का स्टोरेज $\approx 120\text{ TB} \times 365 \times 5 \approx 219\text{ PB}$।
+- **रैम कैशिंग (80/20 नियम):** 20% हॉट ट्वीट्स 80% रीड्स लाते हैं। 1 दिन के हॉट ट्वीट्स हेतु:
+  $$\text{RAM} = 600\text{M} \times 0.2 \times 300 \text{ Bytes} = 36 \text{ GB RAM}$$ (3x रेप्लिकेशन के साथ ~108 GB RAM)।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+सटीक कैलकुलेटर की जरूरत नहीं होती; इंटरव्यूअर राउंड नंबर्स ($10^5$ सेकंड/दिन) के साथ तार्किक सोच और परिमाण के क्रम (Order of Magnitude) को देखता है।
+
+---
+
+### Ch 03: सिस्टम डिज़ाइन इंटरव्यू फ्रेमवर्क (System Design Framework)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`03. System Design Framework/Readme.hi.md`](./03.%20System%20Design%20Framework/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+45 मिनट के सीमित समय में जटिल आर्किटेक्चरल समस्याओं को संरचित, स्पष्ट और सहयोगात्मक तरीके से हल करना।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **4-चरणीय समय आवंटन:**
+  - चरण 1 (00-05 min): Scope & Requirements (DAU, Features, Read/Write Ratio, SLAs)।
+  - चरण 2 (05-15 min): High-Level Design (APIs, Data Flow, High-level Diagram, Core DB)।
+  - चरण 3 (15-35 min): Deep Dive (Bottlenecks, Partitioning, Concurrency, Caching)।
+  - चरण 4 (35-45 min): Wrap-up (SPOF, Metrics, Tracing, Failure Scenarios)।
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **इंटरव्यूअर के साथ साइलेंट न रहें:** 'Think out loud' नीति अपनाएं। हर निर्णय के पीछे का कारण समझाएं।
+- **ट्रेड-ऑफ्स स्पष्ट करें:** कभी यह न कहें कि 'यह सर्वश्रेष्ठ समाधान है'। कहें: *'यह लेटेंसी को 5ms तक घटाता है, किंतु इसके लिए हमें अतिरिक्त Redis मेमोरी का खर्च उठाना होगा।'*
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+बिना आवश्यकताएं स्पष्ट किए सीधे कोड या बॉक्स बनाना शुरू करना सबसे बड़ी गलती मानी जाती है। पहले स्कोप को लॉक करें।
+
+---
+
+### Ch 04: Rate Limiter (दर नियंत्रक आर्किटेक्चर) (Rate Limiter)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`04. Rate Limiter/Readme.hi.md`](./04.%20Rate%20Limiter/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+APIs को DoS/DDoS हमलों, बॉट्स और अत्यधिक ट्रैफिक से बचाने हेतु प्रति यूजर/IP रिक्वेस्ट्स को सीमित करना।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **क्लाइंट -> API Gateway (Rate Limiter Middleware) -> Backend Services:**
+- **Redis Cache:** यूजर टोकन बकेट स्टेट को स्टोर करने के लिए इन-मेमोरी की-वैल्यू स्टोर।
+- **HTTP रिस्पॉन्स:** अनुमति मिलने पर 200 OK; सीमा समाप्त होने पर HTTP 429 Too Many Requests।
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **5 प्रमुख एल्गोरिदम:** Token Bucket (सर्वश्रेष्ठ बर्स्ट हैंडलिंग), Leaky Bucket (स्थिर दर), Fixed Window, Sliding Window Log, Sliding Window Counter।
+- **Race Condition समाधान:** जब 2 नोड्स एक साथ काउंटर पढ़ते हैं, तो **Redis Lua Scripting** द्वारा एटॉमिक रूप से चेक और टोकन डिडक्ट करना।
+- **HTTP हेडर्स:** `X-Ratelimit-Limit`, `X-Ratelimit-Remaining`, `X-Ratelimit-Retry-After`।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+क्लाइंट-साइड रेट लिमिटिंग अविश्वसनीय होती है क्योंकि इसे आसानी से बाईपास किया जा सकता है। सर्वर-साइड API Gateway पर रेट लिमिटिंग अनिवार्य है।
+
+---
+
+### Ch 05: Consistent Hashing (कंसिस्टेंट हैशिंग रिंग) (Consistent Hashing)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`05. Consistent Hashing/Readme.hi.md`](./05.%20Consistent%20Hashing/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+डेटा और रिक्वेस्ट्स को सर्वर्स के क्लस्टर में न्यूनतम री-डिस्ट्रीब्यूशन और बिना कैशे चर्न के समान रूप से बांटना।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **0 से $2^{32}-1$ की हैश रिंग (SHA-1):** सर्वर्स और कीज़ दोनों को रिंग पर मैप किया जाता है।
+- **Clockwise Traversal:** किसी की के लिए रिंग में आगे घड़ी की दिशा में जो पहला सर्वर मिलता है, वह उसका मालिक होता है।
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **Rehash समस्या का उन्मूलन:** पारंपरिक $k \pmod n$ में सर्वर बदलते ही 99% कीज़ बदल जाती हैं। Consistent Hashing में केवल $k/n$ कीज़ री-डिस्ट्रीब्यूट होती हैं।
+- **वर्चुअल नोड्स (Vnodes):** भौतिक सर्वर को 100-300 आभासी नोड्स में बांटकर रिंग पर बिखेरना, जिससे डेटा का फैलाव 99% समान रूप से संतुलित हो जाता है।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+वर्चुअल नोड्स की संख्या बढ़ाने से मेमोरी और रिंग मैनेजमेंट ओवरहेड बढ़ता है, किंतु डेटा का फैलाव अत्यधिक समान हो जाता है। 150-250 Vnodes आदर्श संतुलन है।
+
+---
+
+### Ch 06: Distributed Key-Value Store (DynamoDB / Cassandra) (Key-Value Store)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`06. Key-Value Store/Readme.hi.md`](./06.%20Key-Value%20Store/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+पेटाबाइट-स्केल पर अत्यधिक उच्च उपलब्धता, स्केलेबिलिटी और सब-10ms लेटेंसी वाला की-वैल्यू स्टोर बनाना।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **क्लाइंट -> Coordinator Node -> Storage Nodes:**
+- **डेटा पार्टीशनिंग:** Consistent Hashing with Vnodes।
+- **डेटा रेप्लिकेशन:** रिंग पर घड़ी की दिशा में पहले $N$ अद्वितीय भौतिक नोड्स पर डेटा कॉपी करना।
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **Tunable Quorum:** $N$ रेप्लिका, $W$ राइट्स, $R$ रीड्स। $W + R > N$ होने पर Strong Consistency।
+- **LSM-Tree Internals:** Write-Ahead Log (WAL) -> MemTable (SkipList) -> SSTables on disk -> Bloom Filter -> Compaction।
+- **Vector Clocks:** समवर्ती राइट्स में कारणता (Causality) और डेटा कॉन्फ्लिक्ट्स ट्रैक करना।
+- **Gossip Protocol:** नोड्स के बीच क्लस्टर स्टेट और नोड फेलियर डिटेक्ट करने के लिए पीयर-टू-पीयर कम्युनिकेशन्स।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+B+ Tree इन-प्लेस अपडेट्स करता है जिससे रैंडम राइट्स धीमे होते हैं। LSM-Tree सीक्वेंशियल राइट्स करता है जो राइट-इंटेंसिव सिस्टम्स के लिए 10x तेज़ है।
+
+---
+
+### Ch 07: Distributed Unique ID Generator (Twitter Snowflake) (Unique-Id Generator)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`07. Unique-Id Generator/Readme.hi.md`](./07.%20Unique-Id%20Generator/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+डिस्ट्रीब्यूटेड सिस्टम में प्रति सेकंड लाखों 64-बिट समय-क्रमबद्ध (Time-sortable) अद्वितीय आईडी जनरेट करना।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **Twitter Snowflake 64-bit Structure:**
+  - 1 bit Sign (0)
+  - 41 bits Timestamp (मिलीसेकंड, ~69 वर्ष Epoch)
+  - 5 bits Datacenter ID (32 डेटासेंटर्स)
+  - 5 bits Worker ID (32 वर्कर नोड्स)
+  - 12 bits Sequence Number (4,096 IDs प्रति मिलीसेकंड प्रति वर्कर)
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **क्षमता:** प्रति वर्कर प्रति सेकंड $4,096 \times 1,000 = 4.09 \text{ Million IDs}$।
+- **NTP Clock Drift Handling:** यदि सर्वर की घड़ी पीछे चली जाए, तो क्लॉक कैच-अप होने तक वेट करें अथवा अपवाद (Exception) फेंकें ताकि डुप्लिकेट आईडी न बने।
+- **UUID से श्रेष्ठता:** UUID (128-bit) आकार में दोगुना है और रैंडम होने के कारण B+ Tree इंडेक्स में भारी पेज स्प्लिट्स पैदा करता है। Snowflake 64-bit पूरी तरह सॉर्टेड है।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+सेंट्रलाइज़्ड टिकट सर्वर SPOF बन जाता है। Snowflake पूरी तरह विकेंद्रीकृत (Decentralized) और कोऑर्डिनेशन-मुक्त है।
+
+---
+
+### Ch 08: High-Scale URL Shortener (TinyURL) (URL Shortener)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`08. URL Shortener/Readme.hi.md`](./08.%20URL%20Shortener/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+लंबे URLs को छोटे 7-कैरेक्टर लिंक्स में बदलना और 100k+ QPS पर सब-5ms लेटेंसी के साथ रीडायरेक्ट करना।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **राइट फ्लो:** Client -> API Gateway -> Shortening Service -> Snowflake ID Generator -> Base62 Converter -> DB / Cache।
+- **रीड फ्लो:** Client -> CDN/Edge -> Reverse Proxy -> Redis LRU Cache (80% Hits) -> DB (20% Misses) -> HTTP 302 Redirect।
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **Base62 vs Hash Collisions:** MD5 हैश के पहले 7 कैरेक्टर लेने पर कोलिजन होते हैं। Snowflake 64-bit ID को Base62 ($[0-9, a-z, A-Z]$, $62^7 \approx 3.5 \text{ ट्रिलियन}$) में बदलना 100% कोलिजन-मुक्त और $O(1)$ है।
+- **HTTP 301 vs 302:** 301 ब्राउज़र कैश करता है जिससे सर्वर लोड घटता है किंतु एनालिटिक्स मिस हो जाता है। 302 सर्वर के जरिए रीडायरेक्ट करता है जिससे क्लिक एनालिटिक्स ट्रैक होता है।
+- **Bloom Filter:** गैर-मौजूद फर्जी शॉर्ट कोड्स के डेटाबेस लुकअप को 0ms में ब्लॉक करना।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+डेटा कभी एक्सपायर न होने पर डेटाबेस विशाल हो जाएगा। अतः अनयूज्ड लिंक्स के लिए 2 वर्ष का TTL और कोल्ड स्टोरेज आर्काइवल नीति रखना आवश्यक है।
+
+---
+
+### Ch 09: Distributed Web Crawler (इंटरनेट स्केल वेब क्रॉलर) (Web Crawler)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`09. Web Crawler/Readme.hi.md`](./09.%20Web%20Crawler/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+सर्च इंजन इंडेक्सिंग हेतु 10 बिलियन से अधिक वेब पेजेस को शिष्टता (Politeness) और गति से डाउनलोड करना।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **URL Frontier -> DNS Resolver -> HTML Downloader -> Content Parser -> Duplicate Detector -> Storage / Search Index।**
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **Politeness:** एक ही डोमेन को बार-बार हिट न करें; होस्ट-वाइज़ कतारें और डिले टाइमर।
+- **Priority:** PageRank आधारित कतारें ताकि महत्वपूर्ण पेजेस पहले क्रॉल हों।
+- **SimHash / Fingerprinting:** 64-बिट फिंगरप्रिंट द्वारा डुप्लिकेट और नियर-डुप्लिकेट पेजेस को हैमिंग डिस्टेंस $\le 3$ से पहचानना।
+- **Headless Chrome (Puppeteer):** जावास्क्रिप्ट-हैवी SPAs को रेंडर करके डायनामिक लिंक्स निकालना।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+क्रॉलर स्पाइडर ट्रैप्स (अनंत लूप वाली डायनामिक URLs) में फंस सकता है। अधिकतम पाथ डेप्थ और URL लेंथ लिमिट लगाकर इससे बचा जाता है।
+
+---
+
+### Ch 10: Distributed Notification System (पुश, एसएमएस, ईमेल) (Notification System)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`10. Notification System/Readme.hi.md`](./10.%20Notification%20System/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+करोड़ों उपयोगकर्ताओं को रीयल-टाइम में मल्टी-चैनल (iOS, Android, SMS, Email) नोटिफिकेशन्स डिलीवर करना।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **Services -> Notification API Gateway -> Validator / Rate Limiter -> Message Queues (Kafka) -> Notification Workers -> Third-party Gateways (APNs, FCM, Twilio, SendGrid)।**
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **Deduplication:** `user_id + event_type + timestamp` का Redis में 24h TTL के साथ डिडुप की बनाना ताकि पेमेंट या अलर्ट 2 बार न जाए।
+- **Rate Limiting:** यूजर को स्पैम से बचाने के लिए प्रति घंटा 5 नोटिफिकेशन की सीमा।
+- **Dead Letter Queue (DLQ):** 3 री-ट्राई के बाद फेल नोटिफिकेशन्स को DLQ में डालना ताकि एनालिसिस हो सके।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+थर्ड पार्टी गेटवेज (APNs/Twilio) कभी-कभी लेटेंसी स्पाइक्स या डाउनटाइम का शिकार होते हैं। प्रत्येक चैनल के लिए अलग असिंक्रोनस कतार होना अनिवार्य है।
+
+---
+
+### Ch 11: Real-time News Feed System (Facebook / Twitter Feed) (News Feed System)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`11. News Feed System/Readme.hi.md`](./11.%20News%20Feed%20System/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+करोड़ों यूज़र्स के लिए रियल-टाइम में उनके दोस्तों और पेजेस की पोस्ट्स से बनी व्यक्तिगत न्यूज़ फीड तैयार करना।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **Feed Publishing:** Post Service -> Fanout Service -> Message Queue -> Fanout Workers -> Redis ZSET Cache।
+- **Feed Retrieval:** Client -> Feed Service -> Redis ZSET -> Post Service / Hydration -> Client।
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **Push vs Pull:** सामान्य यूज़र्स के लिए Fanout-on-write (Push) मॉडल ($O(1)$ रीड्स)।
+- **The Celebrity Problem:** 100M फॉलोअर्स वाले सेलिब्रिटी के लिए Fanout-on-read (Pull) मॉडल, ताकि 100M राइट्स का विस्फोट न हो।
+- **Redis Sorted Set (ZSET):** `key=user_feed:<id>`, `score=timestamp`, `value=post_id`। प्रति यूजर केवल हालिया 800 पोस्ट्स कैश करना।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+हर पोस्ट का पूरा डेटा फीड में स्टोर करने से भारी रैम बर्बाद होगी। केवल `post_id` कैश करें और रेंडरिंग के समय पोस्ट मेटाडेटा हाइड्रेट करें।
+
+---
+
+### Ch 12: Real-time Chat System (WhatsApp / Slack / Discord) (Chat System)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`12. Chat System/Readme.hi.md`](./12.%20Chat%20System/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+1-ऑन-1 और ग्रुप चैट्स में सब-100ms लेटेंसी के साथ अरबों मैसेजेस का रियल-टाइम आदान-प्रदान और सिंक।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **Web/Mobile Clients <---> WebSocket Connection Servers <---> Message Routing Service <---> NoSQL Storage (Cassandra)।**
+- **Presence Servers:** यूजर ऑनलाइन/ऑफलाइन स्टेटस ट्रैक करने के लिए Redis Heartbeat।
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **WebSocket:** HTTP Polling के विपरीत निरंतर, द्विदिश (Full-Duplex) कनेक्शन।
+- **मैसेज रिले:** Redis Pub/Sub क्लस्टर द्वारा अलग-अलग चैट सर्वर्स पर जुड़े यूज़र्स के बीच मैसेजेस रूट करना।
+- **डेटाबेस:** भारी राइट्स और टाइम-सीरीज़ क्वेरीज़ के लिए **Apache Cassandra / ScyllaDB**।
+- **मैसेज सीक्वेंसिंग:** Snowflake IDs द्वारा मैसेजेस का सही क्रम बनाए रखना।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+WebSocket सर्वर्स स्टेटफुल होते हैं। अतः सर्वर क्रैश होने पर क्लाइंट्स को तुरंत दूसरे सर्वर से रिकनेक्ट करने के लिए स्मार्ट एक्सपोनेंशियल बैकऑफ चाहिए।
+
+---
+
+### Ch 13: Search Autocomplete System (गूगल सर्च ट्राय) (Search Autocomplete)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`13. Search Autocomplete/Readme.hi.md`](./13.%20Search%20Autocomplete/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+यूजर द्वारा सर्च बॉक्स में टाइप करते ही सब-10ms में टॉप 5 सबसे लोकप्रिय सर्च कीवर्ड्स सुझाव में दिखाना।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **Data Collection:** Search Logs -> Kafka -> Flink Aggregator -> Aggregated DB।
+- **Trie Service:** In-memory Sharded Trie Nodes -> Client Cache / CDN Cache।
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **Trie (Prefix Tree) संरचना:** प्रत्येक नोड एक कैरेक्टर रखता है।
+- **$O(1)$ लुकअप:** प्रत्येक नोड पर उसके सब-ट्री के **Top 5 सर्वाधिक सर्च किए गए कीवर्ड्स और फ्रीक्वेंसी प्री-कंप्यूट करके स्टोर** करना।
+- **ऑफ़लाइन अपडेट:** कीस्ट्रोक्स सीधे ट्राय म्यूटेट नहीं करते; दैनिक बैच जॉब नया ट्राय बनाकर मेमोरी में हॉट-स्वैप करता है।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+अपवित्र या भड़काऊ शब्दों को ऑटो-कम्प्लीट से बाहर रखने के लिए ट्राय लुकअप के बाद एक तेज़ इन-मेमोरी फ़िल्टर लेयर होना अनिवार्य है।
+
+---
+
+### Ch 14: YouTube Video Streaming Platform (Youtube)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`14. Youtube/Readme.hi.md`](./14.%20Youtube/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+लाखों वीडियो अपलोड्स को ट्रांसकोड करना और करोड़ों यूज़र्स को बिना बफरिंग के उच्च-गुणवत्ता वीडियो स्ट्रीम करना।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **Upload Flow:** Client -> Upload Service -> Blob Storage (Original) -> Transcoding Pipeline -> Blob Storage (Transcoded) -> CDN।
+- **Streaming Flow:** Client -> Edge CDN -> HLS Player।
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **DAG Transcoding Scheduler:** वीडियो को छोटे 5-10s चंक्स में काटना और समानांतर में ट्रांसकोड करना।
+- **Bitrate Ladders:** H.264/VP9/AV1 कोडेक्स में 1080p, 720p, 480p, 360p तैयार करना।
+- **Adaptive Bitrate Streaming (HLS / MPEG-DASH):** यूजर की नेटवर्क स्पीड बदलते ही बिना बफरिंग क्वालिटी स्विच होना।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+वीडियो फाइल्स विशाल होती हैं। यदि वे सीधे वेब सर्वर से होकर गुजरेंगी तो सर्वर्स क्रैश हो जाएंगे। क्लाइंट को Pre-signed S3 URLs देकर सीधे ब्लॉब स्टोर पर अपलोड कराएं।
+
+---
+
+### Ch 15: Google Drive Cloud Storage (डेल्टा सिंक एवं ब्लॉब) (Google Drive)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`15. Google Drive/Readme.hi.md`](./15.%20Google%20Drive/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+फाइल्स का क्लाउड स्टोरेज, मल्टी-डिवाइस ऑटो-सिंक, वर्जन कंट्रोल और सुरक्षा।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **Clients (Desktop/Mobile) -> API Gateway -> Block Service & Metadata Service।**
+- **Block Storage (S3):** डेटा ब्लॉक्स।
+- **Metadata DB (PostgreSQL):** फाइल्स, वर्जन्स, परमिशन्स।
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **Block-level Chunking:** फाइल्स को 4 MB के चंक्स में तोड़ना।
+- **Delta Sync:** केवल बदले हुए 4 MB ब्लॉक को अपलोड करना (नेटवर्क और बैंडविड्थ में 95% की बचत)।
+- **Content-Addressable Storage (CAS):** ब्लॉक्स का नाम SHA-256 हैश पर रखना; ग्लोबल डिडुप्लिकेशन द्वारा डिस्क स्पेस बचाना।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+जब दो यूजर एक ही समय एक ही फाइल एडिट करते हैं, तो दूसरे यूजर के लिए कॉन्फ्लिक्ट कॉपी (`file_conflicted.txt`) बनाई जाती है।
+
+---
+
+### Ch 16: Proximity Service (Yelp / Nearby Places) (Proximity Service)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`16. Proximity Service/Readme.hi.md`](./16.%20Proximity%20Service/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+यूज़र की वर्तमान लोकेशन के आधार पर आसपास के 500 मीटर या 5 किमी के भीतर के रेस्टोरेंट्स/दुकानें खोजना।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **Client -> Load Balancer -> Proximity API -> Geospatial Index (Redis GEO / Geohash) -> Business DB (PostgreSQL) -> Client।**
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **Geohash (Base32):** दुनिया को 32 ग्रिड्स में बांटना। 6-कैरेक्टर जियोहैश $\approx 1.2\text{ km} \times 0.6\text{ km}$।
+- **8 Neighboring Grids:** बाउंड्री प्रॉब्लम्स से बचने के लिए यूजर की सेल और चारों ओर की 8 पड़ोसी सेल्स को $O(1)$ में फेच करना।
+- **Quadtree & Google S2:** इन-मेमोरी ट्री और हिल्बर्ट कर्व आधारित मैपिंग।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+व्यवसायों की लोकेशन (स्थान) बहुत कम बदलती है किंतु रीड ट्रैफिक भारी होता है। जियोहैश लेयर को 100% Redis में कैश किया जा सकता है।
+
+---
+
+### Ch 17: Nearby Friends (रियल-टाइम लोकेशन ब्रॉडकास्ट) (Nearby Friends)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`17. Nearby Friends/Readme.hi.md`](./17.%20Nearby%20Friends/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+आसपास मौजूद दोस्तों को रियल-टाइम में एक-दूसरे की लोकेशन दिखाना (उदा: Find My Friends)।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **Mobile App -> WebSocket Connection Servers -> Redis Pub/Sub Router -> Friends' WebSocket Connections।**
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **चुनौती:** 10M यूज़र्स हर 30 सेकंड में लोकेशन भेजते हैं $\implies 330,000 \text{ Writes/sec}$।
+- **Geohash-based Pub/Sub:** दोस्तों के सभी चैनलों पर ब्रॉडकास्ट करने के बजाय जियोहैश सेल आधारित चैनल सब्सक्राइब करना; केवल संबंधित क्षेत्र में लोकेशन अपडेट्स भेजना।
+- **TTL Cache:** वर्तमान लोकेशन को Redis में 10 मिनट के TTL के साथ स्टोर करना।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+मोबाइल की बैटरी लाइफ बचाने के लिए जब यूजर स्थिर (Stationary) हो तो लोकेशन पिंग फ्रीक्वेंसी 30 सेकंड से बढ़ाकर 5 मिनट कर देनी चाहिए।
+
+---
+
+### Ch 18: Google Maps & Route Planning (Google Maps)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`18. Google Maps/Readme.hi.md`](./18.%20Google%20Maps/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+वैश्विक स्तर पर मैप टाइल्स रेंडरिंग, सबसे तेज़ रूट खोजना और रियल-टाइम ट्रैफिक अपडेट्स।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **Tile Service (CDN Cache) -> Routing Service (A* / Contraction Hierarchies) -> Traffic Service (Kafka/Flink)।**
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **मैप टाइल्स:** पूरी दुनिया को 256x256 पिक्सेल की लाखों टाइल्स में प्री-कंप्यूट करना (Quadtree ज़ूम 0 से 21)।
+- **Contraction Hierarchies (CH):** सड़क नेटवर्क ग्राफ के महत्वपूर्ण नोड्स को प्री-प्रोसेस करना, जिससे सब-सेकंड में हज़ारों मील का रूट निकल आता है।
+- **ट्रैफिक इंटीग्रेशन:** जीपीएस स्पीड डेटा से ग्राफ एजेस के वेट्स को डायनामिकली अपडेट करना।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+सादा Dijkstra बहुत धीमा है। प्रोडक्शन रूटिंग इंजन हमेशा A* और Contraction Hierarchies का उपयोग करते हैं।
+
+---
+
+### Ch 19: Distributed Message Queue (Apache Kafka Internals) (Distributed Message Queue)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`19. Distributed Message Queue/Readme.hi.md`](./19.%20Distributed%20Message%20Queue/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+लाखों इवेंट्स प्रति सेकंड के थ्रूपुट के साथ डिस्ट्रीब्यूटेड, फॉल्ट-टॉलरेंट अपेंड-ओनली मैसेज कतार।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **Producers -> Broker Cluster (Topics & Partitions) -> Consumer Groups।**
+- **Metadata Management:** KRaft (Raft consensus) या ZooKeeper।
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **Append-only Commit Log:** डिस्क पर सीक्वेंशियल राइट्स ($O(1)$)।
+- **Zero-Copy Data Transfer:** Linux `sendfile` सिस्टम कॉल द्वारा डिस्क पेजकैश से सीधे नेटवर्क सॉकेट में डेटा भेजना।
+- **Consumer Groups & Offsets:** कंज्यूमर्स के बीच लोड बैलेंसिंग और `__consumer_offsets` टॉपिक में ऑफसेट कमिट।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+पार्टीशन्स की संख्या सोच-समझकर तय करें। बहुत अधिक पार्टीशन्स फाइल डिस्क्रिप्टर्स और री-बैलेंसिंग लेटेंसी बढ़ाते हैं।
+
+---
+
+### Ch 20: Metrics Monitoring & Alerting (Prometheus/TSDB) (Metrics Monitoring and Alerting System)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`20. Metrics Monitoring and Alerting System/Readme.hi.md`](./20.%20Metrics%20Monitoring%20and%20Alerting%20System/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+हज़ारों सर्वर्स के सीपीयू, रैम, डिस्क और कस्टम एप्लिकेशन मेट्रिक्स को कलेक्ट, स्टोर और अलर्ट करना।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **Metrics Collector (Push/Pull) -> Time-Series Database (TSDB) -> Query Engine / Grafana -> Alert Manager (PagerDuty, Slack)।**
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **Pull vs Push:** Prometheus का Pull मॉडल (एजेंट्स को स्क्रैप करना) सर्विस डिस्कवरी को सरल बनाता है।
+- **Gorilla TSDB Compression:** टाइमस्टैम्प्स हेतु **Delta-of-Delta Compression** (16 बाइट्स से 1.37 बिट्स) और फ्लोट्स हेतु XOR कम्प्रेशन।
+- **डाउनसैंपलिंग:** 10 सेकंड का डेटा 7 दिन बाद 1 मिनट और 30 दिन बाद 1 घंटे के रोलअप में बदलना।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+अलर्ट की बाढ़ (Alert Fatigue) से बचने के लिए अलर्ट मैनेजर में डिडुप्लिकेशन, ग्रुपिंग और एस्केलेशन पॉलिसी होना अनिवार्य है।
+
+---
+
+### Ch 21: Real-time Ad Click Event Aggregation (विज्ञापन क्लिक एनालिटिक्स) (Ad Click Event Aggregation)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`21. Ad Click Event Aggregation/Readme.hi.md`](./21.%20Ad%20Click%20Event%20Aggregation/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+प्रति सेकंड लाखों विज्ञापन क्लिक्स को एग्रीगेट करना और विज्ञापनदाताओं को रियल-टाइम एनालिटिक्स देना।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **API Gateway -> Kafka Topic -> Apache Flink / Spark Streaming -> ClickHouse / Cassandra -> Analytics Dashboard।**
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **Event Time vs Processing Time:** वाटरमार्किंग द्वारा 1-5 मिनट के नेटवर्क डिले को संभालना।
+- **एग्रीगेशन विंडोज़:** 1 मिनट की Tumbling Windows (गैर-ओवरलैपिंग) और मूविंग एवरेज हेतु Sliding Windows।
+- **Reconciliation & Click Fraud:** बॉट क्लिक्स और डुप्लिकेट्स को फिल्टर करके विज्ञापनदाताओं से पारदर्शी बिलिंग करना।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+डेटाबेस में हर क्लिक पर `UPDATE counter` करने से रो-लॉकिंग और क्रैश हो जाएगा। हमेशा इन-मेमोरी स्ट्रीम एग्रीगेशन करें।
+
+---
+
+### Ch 22: Hotel Reservation System (होटल बुकिंग एवं कॉनकरेंसी) (Hotel Reservation System)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`22. Hotel Reservation System/Readme.hi.md`](./22.%20Hotel%20Reservation%20System/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+उच्च ट्रैफिक और त्योहारों के दौरान होटलों के कमरों की बुकिंग संभालना और डबल-बुकिंग रोकना।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **Client -> Load Balancer -> Reservation Service -> Relational DB (PostgreSQL) with ACID Transactions।**
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **Concurrency Control:**
+  - *Pessimistic Locking:* `SELECT FOR UPDATE` (डेडलॉक और थ्रूपुट गिरावट का खतरा)।
+  - *Optimistic Locking with Versioning:* `UPDATE inventory SET status='BOOKED', version=v+1 WHERE id=101 AND version=5` (उद्योग मानक)।
+- **2-Phase State Machine:** `AVAILABLE` -> `RESERVED (10 min TTL)` -> पेमेंट सफल होने पर `CONFIRMED`।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+होटल बुकिंग में Strong Consistency अनिवार्य है। NoSQL के बजाय रिलेशनल डीबी (ACID) का उपयोग करें।
+
+---
+
+### Ch 23: Distributed Email Service (Gmail Architecture) (Distributed Email Service)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`23. Distributed Email Service/Readme.hi.md`](./23.%20Distributed%20Email%20Service/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+अरबों उपयोगकर्ताओं के लिए सुरक्षित, स्पैम-मुक्त और उच्च उपलब्धता वाली ईमेल सेवा।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **Web/Mobile Client -> Web Servers -> Mail Storage (Cassandra) & Attachment Store (S3) -> SMTP Outgoing Servers।**
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **प्रोटोकॉल्स:** SMTP (सेंडिंग), IMAP/POP3 (सिंक व फेचिंग)।
+- **स्टोरेज टियर्स:** इनबॉक्स मेटाडेटा Cassandra में (User-partitioned), अटैचमेंट्स Amazon S3 में, फुल-टेक्स्ट सर्च Elasticsearch में।
+- **ईमेल सुरक्षा:** SPF (अधिकृत IP), DKIM (क्रिप्टोग्राफिक सिग्नेचर), DMARC (पॉलिसी एनफोर्समेंट)।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+ईमेल इनबॉक्स बहुत भारी होते हैं। फोल्डर्स और ईमेल्स को यूजर आईडी के आधार पर शार्ड करना अनिवार्य है।
+
+---
+
+### Ch 24: S3-like Distributed Object Storage (BLOB Store) (S3-like Object Storage)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`24. S3-like Object Storage/Readme.hi.md`](./24.%20S3-like%20Object%20Storage/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+अनस्ट्रक्चर्ड डेटा (इमेजेस, वीडियोज, बैकअप्स) के लिए 99.999999999% (11 Nines) ड्यूरेबिलिटी वाला स्टोरेज।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **API Gateway -> Metadata Service (RocksDB/Spanner) & Storage Nodes (Disk Chunks) -> Garbage Collector Worker।**
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **Haystack / Bitcask पैटर्न:** लाखों फाइल्स को बड़े अपेंड-ओनली डेटा फाइल्स में एक साथ लिखना (Inode समाप्त होने से बचाव)।
+- **Erasure Coding ($8+4$):** डेटा को 8 डेटा चंक्स और 4 पैरिटी चंक्स में तोड़कर 12 रैक्स पर रखना। कोई भी 4 सर्वर क्रैश होने पर भी 100% डेटा रिकवरी (3-वे रेप्लिकेशन से 50% बचत)।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+ऑब्जेक्ट स्टोरेज में इन-प्लेस एडिट संभव नहीं है। फाइल अपडेट करने का अर्थ नया वर्जन लिखना है (Immutable Objects)।
+
+---
+
+### Ch 25: Real-time Gaming Leaderboard (लाइव लीडरबोर्ड) (Real-time Gaming Leaderboard)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`25. Real-time Gaming Leaderboard/Readme.hi.md`](./25.%20Real-time%20Gaming%20Leaderboard/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+करोड़ों खिलाड़ियों के स्कोर अपडेट्स और सब-10ms में वैश्विक टॉप-10 लीडरबोर्ड प्रदर्शित करना।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **Game Client -> Game Service -> Leaderboard Service -> Redis Cluster (Sorted Sets) -> Client।**
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **Redis Sorted Set (ZSET) आर्किटेक्चर:** आंतरिक **SkipList + Hash Table**।
+  - `ZADD`: $O(\log N)$ अपडेट।
+  - `ZREVRANGE`: $O(\log N + M)$ टॉप-10 फेच।
+  - `ZREVRANK`: $O(\log N)$ ग्लोबल रैंक लुकअप।
+- **शार्डिंग:** स्कोर रेंज या यूजर आईडी के आधार पर पार्टीशनिंग।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+रिलेशनल डेटाबेस में `ORDER BY score DESC LIMIT 10` भारी टेबल स्कैन करता है और रियल-टाइम अपडेट्स पर क्रैश हो जाता है।
+
+---
+
+### Ch 26: Distributed Payment System (पेमेंट गेटवे एवं लेजर) (Payment System)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`26. Payment System/Readme.hi.md`](./26.%20Payment%20System/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+वित्तीय लेनदेन की 100% सटीकता, सुरक्षा, आइडम्पोटेंसी और नियामक अनुपालन।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **Checkout -> Payment Service -> PSP (Stripe/PayPal) -> Double-Entry Ledger Service -> Reconciliation Batch Job।**
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **Double-Entry Bookkeeping Ledger:** हर ट्रांजैक्शन में डेबिट और क्रेडिट दोनों दर्ज होना: $\sum \text{Debits} == \sum \text{Credits}$।
+- **Idempotency Keys:** डुप्लिकेट पेमेंट रोकने हेतु क्लाइंट UUID हेडर की डीबी जांच।
+- **Reconciliation:** रात में चलने वाला स्वचालित समाधान बैच जॉब जो बैंक फाइल्स को इंटरनल लेजर से मैच करता है।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+पेमेंट सिस्टम में कभी भी 'Eventual Consistency' स्वीकार्य नहीं है। डेटाबेस में स्ट्रिक्ट ACID और डिस्ट्रीब्यूटेड लॉक्स अनिवार्य हैं।
+
+---
+
+### Ch 27: Digital Wallet (उच्च थ्रूपुट डिजिटल वॉलेट) (Digital Wallet)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`27. Digital Wallet/Readme.hi.md`](./27.%20Digital%20Wallet/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+डिजिटल वॉलेट्स के बीच 100,000+ Transfers/sec पर बैलेंस कंजर्वेशन और डेडलॉक-फ्री ट्रांसफर।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **Wallet API -> In-memory Core Ledger Engine (LMAX Disruptor) -> Write-Ahead Log -> Read Replicas (CQRS)।**
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **डेडलॉक रोकथाम:** दो यूज़र्स के बीच समवर्ती ट्रांसफर में हमेशा छोटी ID वाले अकाउंट को पहले लॉक करना (`min(A, B)` then `max(A, B)`)।
+- **LMAX Disruptor:** लॉक-फ्री रिंग बफर द्वारा 100,000+ Transactions/sec की इन-मेमोरी प्रोसेसिंग।
+- **CQRS:** राइट्स इन-मेमोरी कोर में और रीड्स असिंक्रोनस रीड-रेप्लिकस से।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+अकाउंट बैलेंस कभी नेगेटिव नहीं होना चाहिए। बैलेंस इनवेरिएंट ($A_{new} = A_{old} - X \ge 0$) हर ट्रांसफर में एटॉमिकली वैलिडेट होना चाहिए।
+
+---
+
+### Ch 28: Ultra-Low Latency Stock Exchange (स्टॉक एक्सचेंज मैचिंग इंजन) (Stock Exchange)
+
+> 📂 **पूर्ण चैप्टर डॉक्यूमेंटेशन:** [`28. Stock Exchange/Readme.hi.md`](./28.%20Stock%20Exchange/Readme.hi.md)
+
+#### 1. समस्या और कार्यक्षेत्र (Problem Scope & Requirements):
+शेयर बाजार के लिए सब-माइक्रोसेकंड लेटेंसी पर ऑर्डर्स मैच करना और निष्पादित करना।
+
+#### 2. हाई-लेवल आर्किटेक्चर एवं डेटा फ्लो (High-Level Architecture & Flow):
+- **Trading Gateway (FIX Protocol) -> Order Manager -> In-memory Matching Engine (Order Book) -> Market Data Gateway -> Clearing & Settlement।**
+
+#### 3. डीप-डाइव और तकनीकी चुनौतियाँ (Deep Dive & Bottlenecks):
+- **Order Book:** Price-Time Priority (FIFO per price level)। आंतरिक संरचना: B-Tree / SkipList (प्राइस लेवल्स) + Doubly Linked List (ऑर्डर्स) $\implies O(1)$ निष्पादन।
+- **सब-माइक्रोसेकंड ऑप्टिमाइज़ेशन:** प्री-एलोकेटेड C++/रस्ट मेमोरी (No GC Pauses), Kernel Bypass (DPDK), और Deterministic Event Sourcing स्टैंडबाय रेप्लिकेशन।
+
+#### 4. व्यापारिक समझौते एवं विफलता परिदृश्य (Trade-offs & Failure Scenarios):
+स्टॉक एक्सचेंज में कोई भी डेटा लॉस बर्दाश्त नहीं किया जा सकता। ऑर्डर्स को तुरंत सीक्वेंशियल अपेंड-ओनली हार्डवेयर रिंग में परसिस्ट किया जाता है।
+
+---
+
+### 5. डिस्ट्रीब्यूटेड कैशिंग की 3 बड़ी विफलताएं एवं समाधान
+
+1. **Cache Penetration (कैश पेनिट्रेशन):**
+   - *समस्या:* कोई हमलावर ऐसी कीज़ मांगता है जो न तो कैश में हैं और न ही डेटाबेस में (उदा: `id = -9999`)। हर रिक्वेस्ट सीधे डेटाबेस को हिट करती है और डीबी क्रैश हो जाता है।
+   - *समाधान:* **Bloom Filter** का उपयोग करें। यदि ब्लूम फ़िल्टर कहे कि की मौजूद नहीं है, तो तुरंत 404 लौटा दें। वैकल्पिक रूप से, नल वैल्यू को 2 मिनट के TTL के साथ कैश करें (`SET key null EX 120`)।
+
+2. **Cache Breakdown / Stampede (हॉट की एक्सपायरेशन):**
+   - *समस्या:* एक अत्यधिक लोकप्रिय की (उदा: बिग बिलियन डेज़ सेल का मुख्य प्रोडक्ट) जिस पर 50,000 QPS आ रहे हैं, अचानक कैश में एक्सपायर हो जाती है। सभी 50,000 रिक्वेस्ट्स एक ही मिलीसेकंड में डीबी को हिट करती हैं।
+   - *समाधान:* **Mutex Lock (SETNX)** का उपयोग करें। केवल पहली रिक्वेस्ट डीबी से डेटा लाएगी, बाकी रिक्वेस्ट्स इंतजार करेंगी। या **Probabilistic Early Expiration (XFetch)** एल्गोरिदम द्वारा की एक्सपायर होने से 10 सेकंड पहले ही बैकग्राउंड में कैश रिफ्रेश कर लें।
+
+3. **Cache Avalanche (कैश हिमस्खलन):**
+   - *समस्या:* लाखों कीज़ को एक ही समय (उदा: रात 12:00 बजे 1 घंटे का फिक्स TTL) पर एक्सपायर होने के लिए सेट कर दिया गया। रात 1:00 बजे पूरा कैश एक साथ खाली हो जाता है और डीबी बैठ जाता है।
+   - *समाधान:* **Random TTL Jitter (यादृच्छिक समय अंतर)** जोड़ें। `TTL = 3600 + rand(0, 300)` सेकंड। इससे कीज़ अलग-अलग समय पर धीरे-धीरे एक्सपायर होती हैं।
+
+### 6. डेटाबेस रेप्लिकेशन टोपोलॉजीज़ (Replication Topologies)
+
+| टोपोलॉजी | राइट्स (Writes) | रीड्स (Reads) | उपयुक्तता (Use Case) | मुख्य चुनौती |
+|---|---|---|---|---|
+| **Single-Leader** | केवल एक Primary नोड पर | कई Read Replicas पर | सामान्य वेब ऐप्स, ब्लॉग्स, ई-कॉमर्स | मास्टर फेलियर पर इलेक्शन डाउनटाइम |
+| **Multi-Leader (Active-Active)** | कई अलग-अलग डेटासेंटर मास्टर्स पर | स्थानीय रीड रेप्लिकस पर | मल्टी-रीजन ऐप्स, ग्लोबल कंपनियां | राइट कॉनफ्लिक्ट रेजोल्यूशन (Conflict Resolution) |
+| **Leaderless (Dynamo-style)** | किसी भी कोरम नोड पर | कोरम नोड्स से ($W + R > N$) | Cassandra, Riak, DynamoDB | रीड रिपेयर और हिंटेड हैंडऑफ ओवरहेड |
+
+### 7. सिस्टम स्केलेबिलिटी के 5 स्वर्णिम सूत्र (Golden Rules of Scalability)
+1. **Stateless Services:** एप्लिकेशन सर्वर्स को पूरी तरह स्टेटलेस रखें ताकि ऑटो-स्केलिंग 1 से 100 नोड्स तक सेकंडों में हो सके।
+2. **Asynchronous Queuing:** यूजर के सीधे पाथ (Critical Path) से हर उस काम को हटाएं जो तुरंत जरूरी नहीं है और उसे Kafka कतार में डालें।
+3. **Horizontal Sharding:** कभी भी एक डेटाबेस टेबल को 10 करोड़ रोज़ से अधिक न बढ़ने दें; शार्ड की द्वारा पार्टीशन करें।
+4. **Defense in Depth (बहुस्तरीय कैशिंग):** ब्राउज़र कैश -> CDN Edge -> API Gateway Cache -> App Memory -> Redis -> DB Buffer Pool।
+5. **Graceful Degradation:** भारी ओवरलोड के समय गैर-ज़रूरी फीचर्स (उदा: रिकमेंडेशन्स, ऑटो-सजेशन) को स्वतः अक्षम (Disable) करके कोर सर्विस को चालू रखना।
+
+---
+
+### 8. डिस्ट्रीब्यूटेड लॉकिंग: Redlock एल्गोरिदम और Fencing Tokens
+
+- **समस्या:** सिंगल Redis नोड पर `SET resource_name my_random_value NX PX 30000` लॉक लगाना आसान है, किंतु यदि वह Redis मास्टर क्रैश हो जाए और स्लेव पर रेप्लिकेट होने से पहले दूसरा नोड लॉक ले ले, तो दो नोड्स एक साथ क्रिटिकल सेक्शन में घुस जाते हैं।
+- **Redlock एल्गोरिदम (Antirez द्वारा प्रतिपादित):**
+  1. 5 स्वतंत्र Redis नोड्स (बिना किसी रेप्लिकेशन के) का उपयोग करें।
+  2. क्लाइंट एक ही रैंडम स्ट्रिंग और छोटे टाइमआउट (5-50ms) के साथ सभी 5 नोड्स पर एक साथ लॉक प्राप्त करने का प्रयास करता है।
+  3. यदि क्लाइंट बहुमत (कम से कम 3 नोड्स) पर लॉक सफलतापूर्वक पा लेता है और बीता हुआ समय लॉक TTL से कम है, तो लॉक मान्य माना जाता है।
+  4. कार्य पूरा होने पर सभी 5 नोड्स पर Lua स्क्रिप्ट द्वारा लॉक रिलीज किया जाता है।
+- **Fencing Tokens (Martin Kleppmann का समाधान):**
+  - जीसी पॉज़ (GC Pause) या नेटवर्क डिले के कारण क्लाइंट का लॉक एक्सपायर हो सकता है किंतु क्लाइंट सोचता है कि उसके पास लॉक है।
+  - *समाधान:* लॉक सर्विस प्रत्येक लॉक के साथ एक मोनोटोनिकली बढ़ता हुआ **Fencing Token (उदा: 101, 102, 103)** देती है। स्टोरेज लेयर केवल उच्च टोकन वाले राइट्स को स्वीकार करता है और पुराने टोकन वाले राइट्स को रिजेक्ट कर देता है।
+
+### 9. डेटाबेस इंडेक्सिंग के स्वर्णिम नियम (Indexing Best Practices)
+
+1. **Leftmost Prefix Rule (कम्पोजिट इंडेक्स नियम):**
+   - यदि इंडेक्स `(first_name, last_name, age)` पर है, तो क्वेरी केवल `first_name` या `first_name AND last_name` पर ही इंडेक्स का उपयोग कर सकती है। केवल `last_name` या `age` पर क्वेरी करने पर फुल टेबल स्कैन होगा।
+2. **Covering Index (कवरिंग इंडेक्स):**
+   - यदि इंडेक्स में वे सभी कॉलम्स मौजूद हैं जो `SELECT` और `WHERE` में मांगे गए हैं, तो डेटाबेस को मुख्य टेबल डिस्क पेजेस को छूने की आवश्यकता ही नहीं पड़ती (Index-Only Scan), जो 10x तेज़ है।
+3. **Low-Cardinality Anti-Pattern:**
+   - ऐसे कॉलम्स पर B+ Tree इंडेक्स कभी न बनाएं जिनमें बहुत कम विविधता हो (उदा: `gender`, `is_active`, `status`)। डेटाबेस ऑप्टिमाइज़र ऐसे इंडेक्स को अनदेखा करके सादा टेबल स्कैन करता है।
+
+### 10. इंटरव्यू की सफलता के 5 अंतिम गोल्डन रूल्स (Final Golden Rules)
+
+- **1. 80/20 नियम याद रखें:** इंटरव्यूअर आपसे सब कुछ नहीं सुनना चाहता; वह महत्वपूर्ण 20% कोर आर्किटेक्चर पर आपकी गहरी पकड़ देखना चाहता है।
+- **2. नंबरों का औचित्य समझाएं:** जब कहें कि *'हम Redis चुन रहे हैं'*, तो बताएं: *'क्योंकि हमें <2ms लेटेंसी चाहिए और डेटा की-वैल्यू पेयर में आसानी से बैठता है'*, न कि सिर्फ इसलिए कि *'Redis लोकप्रिय है'*\।
+- **3. फेलियर को आर्किटेक्चर का हिस्सा मानें:** हार्डवेयर क्रैश होगा, नेटवर्क टूटेगा, थर्ड-पार्टी APIs डाउन होंगी। जो इंजीनियर फेलियर मानकर चलता है, वही सच्चा सीनियर इंजीनियर होता है।
+- **4. लागत (Cost) पर ध्यान दें:** असीमित सर्वर्स लगाना इंजीनियरिंग नहीं है। न्यूनतम लागत और सही रिसोर्स यूटिलाइज़ेशन के साथ सिस्टम बनाना असली इंजीनियरिंग है।
+- **5. इंटरव्यूअर को अपना सहयोगी (Peer) समझें:** यह वाद-विवाद नहीं है, यह एक व्हाइटबोर्ड पर दो सहकर्मियों के साथ मिलकर सिस्टम डिज़ाइन करने का सहयोगात्मक अभ्यास है।
+
+---
+
+### 11. API Gateway बनाम Service Mesh (Envoy / Istio)
+
+| पहलू | API Gateway (उदा: Kong, AWS API Gateway) | Service Mesh (उदा: Istio, Linkerd) |
+|---|---|---|
+| **ट्रैफिक प्रकार** | **North-South Traffic** (बाहरी क्लाइंट्स से आंतरिक सिस्टम्स में) | **East-West Traffic** (माइक्रोसर्विस से माइक्रोसर्विस के बीच) |
+| **मुख्य कार्य** | ऑथेंटिकेशन (JWT/OAuth), रेट लिमिटिंग, SSL Termination, बिलिंग | mTLS (म्यूचुअल टीएलएस एन्क्रिप्शन), सर्विस डिस्कवरी, रिट्रीज, ट्रेंसिंग |
+| **आर्किटेक्चर** | सेंट्रलाइज़्ड या क्लस्टर्ड रिवर्स प्रॉक्सी लेयर | साइडकार पैटर्न (Sidecar Proxy - प्रत्येक पॉड/कंटेनर के साथ Envoy) |
+| **उपयोगिता** | जब बाहरी मोबाइल/वेब ऐप्स को सुरक्षित रूप से एंट्री देनी हो | जब आंतरिक 100+ माइक्रोसर्विस के बीच सुरक्षित और ट्रेस करने योग्य संचार चाहिए |
+
+---
+
+### 12. मुख्य सिस्टम्स के डेटाबेस स्कीमा और SQL उदाहरण
+
+#### Ch 08: URL Shortener टेबल स्कीमा:
+```sql
+CREATE TABLE short_urls (
+    id BIGINT PRIMARY KEY, -- 64-bit Snowflake ID
+    short_code VARCHAR(10) UNIQUE NOT NULL, -- Base62 representation
+    long_url TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    expires_at TIMESTAMP WITH TIME ZONE,
+    user_id BIGINT
+);
+CREATE INDEX idx_short_code ON short_urls (short_code);
+```
+
+#### Ch 22: Hotel Reservation टेबल स्कीमा (Optimistic Locking):
+```sql
+CREATE TABLE room_inventory (
+    room_id BIGINT PRIMARY KEY,
+    hotel_id BIGINT NOT NULL,
+    date DATE NOT NULL,
+    status VARCHAR(20) NOT NULL, -- 'AVAILABLE', 'RESERVED', 'BOOKED'
+    version INT NOT NULL DEFAULT 1,
+    UNIQUE(hotel_id, date, room_id)
+);
+```
+
+#### Ch 26: Double-Entry Ledger टेबल स्कीमा:
+```sql
+CREATE TABLE ledger_entries (
+    entry_id UUID PRIMARY KEY,
+    transaction_id UUID NOT NULL,
+    account_id BIGINT NOT NULL,
+    amount_cents BIGINT NOT NULL, -- Positive for Credit, Negative for Debit
+    currency VARCHAR(3) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+CREATE INDEX idx_ledger_tx ON ledger_entries (transaction_id);
+```
+
+---
+
+## ⚖️ आर्किटेक्चरल तुलना तालिकाएँ एवं एंटी-पैटर्न्स (Cheat Sheet & Trade-off Matrices)
+
+### 1. कम्युनिकेशन प्रोटोकॉल्स की तुलना (REST vs gRPC vs GraphQL vs WebSockets vs SSE)
+
+| प्रोटोकॉल | ट्रांसपोर्ट | लेटेंसी | पेलोड प्रारूप | उपयोगिता (Best Use Case) |
+|---|---|---|---|---|
+| **REST** | HTTP/1.1 or HTTP/2 | मध्यम | JSON, XML | सार्वजनिक पब्लिक APIs, CRUD ऑपरेशन्स |
+| **gRPC** | HTTP/2 | अत्यंत कम (Sub-ms) | Protocol Buffers (बाइनरी) | इंटरनल माइक्रोसर्विस कम्युनिकेशन्स |
+| **GraphQL** | HTTP/1.1 or HTTP/2 | मध्यम | JSON | मोबाइल ऐप्स (केवल आवश्यक फील्ड्स मांगना) |
+| **WebSocket** | TCP (Upgrade) | बहुत कम | टेक्स्ट, बाइनरी (द्विदिश) | चैट, गेमिंग, लाइव स्टॉक टिकर |
+| **Server-Sent Events (SSE)** | HTTP/2 | कम | टेक्स्ट/इवेंट स्ट्रीम (एकदिश) | लाइव स्पोर्ट्स स्कोर, AI टोकन स्ट्रीमिंग |
+
+### 2. मैसेजिंग सिस्टम्स की तुलना (Kafka vs RabbitMQ vs AWS SQS)
+
+| विशेषता | Apache Kafka | RabbitMQ | AWS SQS |
+|---|---|---|---|
+| **मॉडल** | Append-Only Log (Pull-based) | Smart Broker, Dumb Consumer (Push-based) | Cloud Hosted Queue |
+| **थ्रूपुट** | 1,000,000+ msgs/sec | ~50,000 msgs/sec | ऑटो-स्केल्ड क्लाउड थ्रूपुट |
+| **मैसेज रिटेंशन** | दिनों या महीनों तक सुरक्षित (Replay संभव) | कंज्यूम होने के बाद डिलीट | 1 से 14 दिन |
+| **उपयोगिता** | इवेंट स्ट्रीमिंग, एनालिटिक्स, लॉग्स | जटिल रूटिंग, टास्क कतारें, RPC | सर्वरलेस आर्किटेक्चर |
+
+### 3. सिस्टम डिज़ाइन इंटरव्यू की 10 सबसे बड़ी गलतियाँ (Top 10 Anti-Patterns)
+
+1. **बिना आवश्यकताएं समझे सीधे आर्किटेक्चर बनाना:** हमेशा पहले 3-5 मिनट DAU, रीड:राइट अनुपात और SLA स्पष्ट करें।
+2. **रैम (RAM) को असीमित मान लेना:** Redis में असीमित डेटा नहीं समा सकता; हमेशा LRU Eviction और TTL लगाएं।
+3. **नेटवर्क पार्टीशन और स्प्लिट-ब्रेन को अनदेखा करना:** हमेशा कोरम ($N/2 + 1$) और Raft कंसेंसस का उल्लेख करें।
+4. **माइक्रोसर्विस में Two-Phase Commit (2PC) लगाना:** 2PC ब्लॉकिंग है; इसके स्थान पर **Saga Pattern** का उपयोग करें।
+5. **कैश स्टैम्पीड (Cache Stampede) को भूल जाना:** हॉट की एक्सपायर होने पर डीबी क्रैश से बचने हेतु Mutex Lock लगाएं।
+6. **डेटाबेस रेप्लिकेशन लैग की उपेक्षा:** यूजर के हालिया राइट्स को कुछ सेकंड तक सीधे Master DB से पढ़ें।
+7. **बिना आवश्यकता के ओवर-इंजीनियरिंग:** 10 QPS के सिस्टम के लिए 50 नोड्स का Kafka क्लस्टर न सुझाएं।
+8. **सिंगल प्वाइंट ऑफ फेलियर (SPOF) छोड़ देना:** लोड बैलेंसर और मास्टर डीबी को हमेशा एक्टिव-पैसिव रिडंडेंसी दें।
+9. **डेटाबेस इंडेक्सिंग के नुकसान न जानना:** हर कॉलम पर इंडेक्स बनाने से राइट्स धीमे होते हैं और डिस्क भरती है।
+10. **इंटरव्यूअर के साथ साइलेंट हो जाना:** हमेशा 'Think out loud' करें और अपने विचारों को साझा करें।
+
+### 4. FAANG/MANG सिस्टम डिज़ाइन मूल्यांकन रूब्रिक (Grading Rubric)
+
+| स्तर (Level) | अपेक्षित क्षमताएँ (Expectations) |
+|---|---|
+| **L4 (Mid-Level)** | सही कंपोनेंट्स चुनना, बेसिक APIs और डीबी स्कीमा बनाना, लोड बैलेंसर और कैश का सही उपयोग। |
+| **L5 (Senior Engineer)** | ट्रेड-ऑफ्स स्पष्ट करना, बॉटलनेक्स की पहचान, डेटा शार्डिंग, कंकरेंसी लॉक्स, फेलियर मोड्स। |
+| **L6 (Staff / Principal)** | अस्पष्टता को परिभाषित करना, मल्टी-डेटासेंटर DR, लागत अनुकूलन, संगठन-व्यापी प्रभाव। |
+
+---
+
+## 🎮 लाइव इंटरएक्टिव सिम्युलेटर्स गाइड
+
+इस प्रोजेक्ट में सिद्धांतों को जीवंत करने के लिए व्यावहारिक, पूर्णतः कार्यात्मक कोड और इंटरएक्टिव सिम्युलेटर्स शामिल हैं:
+
+### 1. वेब डैशबोर्ड और लाइव सिम्युलेटर्स (`http://localhost:8000/`)
+- **Token Bucket Rate Limiter (Ch 04):** लाइव रिक्वेस्ट भेजकर HTTP 429 थ्रॉटलिंग का वास्तविक प्रभाव देखें।
+- **Consistent Hashing Ring (Ch 05):** कीज़ डालें और देखें कि वर्चुअल नोड्स के साथ कौन सा सर्वर रिस्पॉन्सिबल होता है।
+- **Twitter Snowflake Generator (Ch 07):** 64-बिट टाइम-सॉर्टेड आईडी जनरेट करें और उसके बिट कंपोनेंट्स का विश्लेषण करें।
+- **TinyURL Shortener (Ch 08):** Base62 एन्कोडिंग, LRU Cache और Bloom Filter के साथ यूआरएल छोटा करें।
+- **Search Autocomplete (Ch 13):** Prefix Trie के साथ O(1) में सजेशन्स सर्च करें।
+- **Real-time Leaderboard (Ch 25):** SkipList + Hash Table पर लाइव स्कोर अपडेट और टॉप-5 पोडियम फेच करें।
+- **Digital Wallet (Ch 27):** डेडलॉक-फ्री डबल-एंट्री लेजर में ट्रांसफर टेस्ट करें।
+- **Metrics Engine (Ch 20):** CPU यूसेज रिकॉर्ड करें और ऑटोमैटिक थ्रेशोल्ड अलर्ट्स ट्रिगर होते देखें।
+
+### 2. VitePress सम्पूर्ण डॉक्यूमेंटेशन पोर्टल (`http://localhost:5173/` या `/portal/`)
+- **सभी 28 चैप्टर्स** संपूर्ण **Tech-Hinglish** में सुसज्जित।
+- **180+ विश्व भाषाओं का लाइव गूगल ट्रांसलेटर ड्रॉपडाउन** (अंग्रेजी, स्पेनिश, फ्रेंच, जर्मन, अरबी, रूसी, चीनी, जापानी, मराठी, बंगाली, तेलुगु, तमिल, गुजराती, आदि)।
+- डार्क/लाइट मोड और ऑफलाइन लोकल सर्च।
+
+### 3. इंटरएक्टिव CLI टूल्स (`python cli.py`)
+```bash
+# सभी सिस्टम्स का समग्र बेंचमार्क
+python cli.py benchmark-all
+
+# विशिष्ट सिस्टम डेमो
+python cli.py demo-rate-limiter
+python cli.py demo-consistent-hashing
+python cli.py demo-snowflake
+python cli.py demo-url-shortener
+python cli.py demo-autocomplete
+python cli.py demo-leaderboard
+python cli.py demo-wallet
+python cli.py demo-message-queue
+python cli.py demo-object-storage
+python cli.py demo-stock-exchange
+```
+
+---
+
+## 📖 संदर्भ एवं इंजीनियरिंग ब्लॉग्स (Curated Engineering Resources)
+
+### Rate Limiting & Resilience
+- [Martin Fowler: Circuit Breaker Pattern](https://martinfowler.com/bliki/CircuitBreaker.html)
+- [Uber Engineering: Leaky Bucket Rate Limiting Library in Go](https://github.com/uber-go/ratelimit)
+- [Stripe Engineering: Scaling your API with rate limiters](https://stripe.com/blog/rate-limiters)
+
+### Consistent Hashing & Distributed Storage
+- [Tom White: Consistent Hashing Explained](https://tom-e-white.com/2007/11/consistent-hashing.html)
+- [Stanford CS168: Consistent Hashing Lecture Notes](http://theory.stanford.edu/~tim/s16/l/l1.pdf)
+- [Amazon Dynamo: Highly Available Key-value Store (SOSP 2007 Paper)](https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf)
+- [Google Maglev: A Fast and Reliable Software Network Load Balancer](https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/44824.pdf)
+- [Discord Engineering: How Discord Scaled Elixir to 5,000,000 Concurrent Users](https://blog.discord.com/scaling-elixir-f9b8e1e7c29b)
+
+### Databases & Storage Engines
+- [Google Bigtable: A Distributed Storage System for Structured Data (OSDI 2006)](https://static.googleusercontent.com/media/research.google.com/en//archive/bigtable-osdi06.pdf)
+- [Facebook Haystack: Finding a needle in Haystack - Facebook's photo storage](https://www.usenix.org/legacy/event/osdi10/tech/full_papers/Beaver.pdf)
+- [Datastax: Apache Cassandra Architecture Internals](https://docs.datastax.com/en/archived/cassandra/3.0/cassandra/architecture/archIntro.html)
+- [RocksDB: LSM-Tree internals and write amplification](https://rocksdb.org/blog/2014/03/27/how-to-backup-rocksdb.html)
+
+### Unique IDs & Time
+- [Twitter Engineering: Announcing Snowflake](https://blog.twitter.com/engineering/en_us/a/2010/announcing-snowflake.html)
+- [Flickr Code: Ticket Servers - Distributed Unique Primary Keys on the Cheap](https://code.flickr.net/2010/02/08/ticket-servers-distributed-unique-primary-keys-on-the-cheap)
+
+### Messaging, Streaming & Real-Time
+- [LinkedIn Engineering / Apache Kafka Architecture Paper (NetDB 2011)](https://www.microsoft.com/en-us/research/wp-content/uploads/2017/09/Kafka.pdf)
+- [Discord Engineering: How Discord Stores Billions of Messages](https://discord.com/blog/how-discord-stores-billions-of-messages)
+- [Slack Engineering: Flannel - An Application-Level Edge Cache to Make Slack Scale](https://slack.engineering/flannel-an-application-level-edge-cache-to-make-slack-scale/)
+- [Netflix Tech Blog: High Quality Video Encoding at Scale](https://netflixtechblog.com/high-quality-video-encoding-at-scale-d159db052746)
+
+### Financial Systems, Low Latency & High Performance
+- [Martin Fowler: The LMAX Architecture (Disruptor Pattern)](https://martinfowler.com/articles/lmax.html)
+- [Double-entry bookkeeping principles for software engineers](https://beancount.github.io/docs/the_double_entry_counting_method.html)
+- [High-frequency trading matching engine design](https://www.cmegroup.com/education/courses/introduction-to-cme-globex.html)
+
+---
+
+## 📜 लाइसेंस एवं कॉपीराइट (License & Copyright)
+यह रिपोजिटरी jigsi_karia द्वारा क्यूरेट की गई है और सॉफ्टवेयर इंजीनियरिंग समुदाय के अध्ययन हेतु निःशुल्क उपलब्ध है।
