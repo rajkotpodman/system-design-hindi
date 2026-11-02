@@ -1,8 +1,8 @@
 
-# [System Design Interview - An Insider's Guide (Vol 1)](https://bytebytego.com/courses/system-design-interview)
-These notes are based on the System Design Interview books - [Vol 1 2nd Ed](https://www.goodreads.com/book/show/54109255-system-design-interview-an-insider-s-guide) 
+# [System Design Interview - An Insider's Guide (Vol 1 and 2)](https://bytebytego.com/courses/system-design-interview)
+These notes are based on the System Design Interview books - [Vol 1 and Vol 2 2nd Ed](https://www.goodreads.com/book/show/54109255-system-design-interview-an-insider-s-guide) 
 
-Check the notes here: https://pagefy.io 
+Check the notes here: https://pagefy.io/system-design-interview
 
 **Note:** These notes are a work in progress. 
 
@@ -25,6 +25,8 @@ Check the notes here: https://pagefy.io
  * [Chapter 16 - Proximity Service](./16.%20Proximity%20Service/)
 
  * [Chapter 17 - Nearby Friends](./17.%20Nearby%20Friends/)
+
+ * [Chapter 22 - Hotel Reservation System](./22.%20Hotel%20Reservation%20System/)
 
 
 
