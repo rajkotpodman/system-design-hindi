@@ -30,7 +30,7 @@ This chapter explores the design and implementation of a rate limiter—a system
 2. **Server-Side Implementation:** Preferred for control and reliability.
 3. **Middleware (API Gateway):** A flexible option for integrated rate limiting.
 
-<img src="./images/rate_limiter_architecture.png" alt="Rate Limiting Middleware Architecture" width="500">
+    <img src="./images/rate_limiter_architecture.png" style="margin-left: 40px; margin-top: 20px; margin-bottom: 20px;" alt="Rate Limiting Middleware Architecture" width="500">
 
 ### Guidelines for Placement
 - Evaluate current tech stack and choose efficient options.
@@ -45,7 +45,7 @@ This chapter explores the design and implementation of a rate limiter—a system
 - **Pros:** Easy to implement, memory-efficient, supports traffic bursts.
 - **Cons:** Requires careful parameter tuning.
 
-<img src="./images/token-bucket.png" alt="Token Bucket Algorithm" width="500">
+  <img src="./images/token-bucket.png" style="margin-left: 40px; margin-top: 20px; margin-bottom: 20px;" alt="Token Bucket Algorithm" width="500">
 
 
 ### 2. Leaking Bucket
@@ -53,7 +53,9 @@ This chapter explores the design and implementation of a rate limiter—a system
 - **Pros:** Memory-efficient, stable outflow rate.
 - **Cons:** Traffic bursts may delay recent requests.
   
-<img src="./images/leaking-bucket.png" alt="Leaking Bucket Algorithm" width="500">
+  <img src="./images/leaking-bucket.png" style="margin-left: 40px; margin-top: 20px; margin-bottom: 20px;" alt="Leaking Bucket Algorithm" width="500">
+
+  Example: https://github.com/uber-go/ratelimit
 
 
 
@@ -62,13 +64,13 @@ This chapter explores the design and implementation of a rate limiter—a system
 - **Pros:** Simple, efficient for specific use cases.
 - **Cons:** Traffic spikes at window edges can exceed limits.
 
-<img src="./images/fixed-window-counter.png" alt="Fixed Window Counter" width="500">
+  <img src="./images/fixed-window-counter.png" style="margin-left: 40px; margin-top: 20px; margin-bottom: 20px;" alt="Fixed Window Counter" width="500">
 
 
-Sudden burst of traffic at the edges of time windows
+- Sudden burst of traffic at the edges of time windows
 could cause more requests than allowed quota to go through.
 
-<img src="./images/fixed-window-issue.png" alt="Fixed Window Issue" width="500">
+  <img src="./images/fixed-window-issue.png" style="margin-left: 40px; margin-top: 20px; margin-bottom: 20px;" alt="Fixed Window Issue" width="500">
 
 
 ### 4. Sliding Window Log
@@ -76,7 +78,7 @@ could cause more requests than allowed quota to go through.
 - **Pros:** Accurate rate limiting.
 - **Cons:** High memory consumption.
   
-<img src="./images/sliding-window-log.png" alt="Sliding Window Log" width="500">
+  <img src="./images/sliding-window-log.png" style="margin-left: 40px; margin-top: 20px; margin-bottom: 20px;" alt="Sliding Window Log" width="500">
 
 
 ### 5. Sliding Window Counter
@@ -84,7 +86,7 @@ could cause more requests than allowed quota to go through.
 - **Pros:** Memory-efficient, handles traffic bursts.
 - **Cons:** Approximation may not be perfectly strict.
   
-<img src="./images/sliding-window-counter.png" alt="Fixed Window Counter" width="500">
+  <img src="./images/sliding-window-counter.png" style="margin-left: 40px; margin-top: 20px; margin-bottom: 20px;" alt="Fixed Window Counter" width="500">
 
 
 
@@ -95,7 +97,7 @@ could cause more requests than allowed quota to go through.
   2. Middleware checks counters in Redis.
   3. Request is processed or rejected based on limits.
 
-<img src="./images/architecture.png" alt="Architecture" width="500">
+  <img src="./images/architecture.png" style="margin-left: 40px; margin-top: 40px; margin-bottom: 20px;" alt="Architecture" width="500">
 
 
 ## Advanced Considerations
