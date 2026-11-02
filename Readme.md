@@ -24,6 +24,8 @@ Check the notes here: https://pagefy.io
  * [Chapter 15 - Design Google Drive](./15.%20Google%20Drive/)
  * [Chapter 16 - Proximity Service](./16.%20Proximity%20Service/)
 
+ * [Chapter 17 - Nearby Friends](./17.%20Nearby%20Friends/)
+
 
 
 
