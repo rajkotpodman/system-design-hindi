@@ -38,6 +38,9 @@ YouTube is a massive video streaming platform supporting video uploads, playback
 ## Step 2: High-Level Design
 
 ### Components
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img src="./images/high-level-design.png" alt="High Level Design" width="300">
+
 1. **Client:** Devices like smartphones, computers, and TVs.
 2. **CDN (Content Delivery Network):** Stores and streams videos.
 3. **API Servers:** Handles all user interactions except video streaming (e.g., uploads, metadata updates).
@@ -46,7 +49,6 @@ YouTube is a massive video streaming platform supporting video uploads, playback
 6. **Transcoding Servers:** Convert videos into multiple resolutions and formats.
 7. **Transcoded Storage:** Blob storage for transcoded videos.
 
-    <img src="./images/high-level-design.png" alt="High Level Design" width="300">
 
 ---
 
@@ -72,18 +74,25 @@ YouTube is a massive video streaming platform supporting video uploads, playback
 
 
 - **Metadata Upload (Steps):**
+
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src="./images/metadata-upload.png" alt="Metadata Upload" height="300">
+
     - The client in parallel sends a request to update the video metadata 
     - The request contains video metadata, including file name, size, format, etc.
     
-        <img src="./images/metadata-upload.png" alt="Metadata Upload" height="300">
+       
 
 
 #### 2. Video Streaming Flow
+
+<div style="margin-left: 3em;">
+  <img src="./images/video-streaming-flow.png" alt="Video Streaming Flow" height="250">
+</div>
+
 - Videos are streamed directly from the CDN using edge servers to minimize latency.
 - Some of te popular streaming protocols are MPEG_DASH, Apple HLS, Adobe HDS.
 -  *Different streaming protocols support different video encodings and playback players.*
 
-    <img src="./images/video-streaming-flow.png" alt="Video Streaming Flow" width="200">
 
 ---
 
