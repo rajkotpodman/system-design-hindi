@@ -30,11 +30,20 @@ function initTranslate() {
         combo.addEventListener('change', () => {
           const val = combo.value
           if (val) {
-            document.cookie = `googtrans=/auto/${val}; path=/;`
-            document.cookie = `googtrans=/auto/${val}; path=/; domain=${location.hostname};`
+            document.cookie = `googtrans=/auto/${val}; path=/; SameSite=Lax;`
+            document.cookie = `googtrans=/hi/${val}; path=/; SameSite=Lax;`
+            if (location.hostname && location.hostname.includes('.')) {
+              document.cookie = `googtrans=/auto/${val}; path=/; domain=${location.hostname}; SameSite=Lax;`
+              document.cookie = `googtrans=/hi/${val}; path=/; domain=${location.hostname}; SameSite=Lax;`
+              document.cookie = `googtrans=/auto/${val}; path=/; domain=.${location.hostname}; SameSite=Lax;`
+              document.cookie = `googtrans=/hi/${val}; path=/; domain=.${location.hostname}; SameSite=Lax;`
+            }
           } else {
             document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
-            document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${location.hostname};`
+            if (location.hostname && location.hostname.includes('.')) {
+              document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${location.hostname};`
+              document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${location.hostname};`
+            }
           }
         })
       }

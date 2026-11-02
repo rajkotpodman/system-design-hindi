@@ -680,26 +680,72 @@ HTML_DASHBOARD = """
   </div>
 
   <script>
+    function setGoogleTransCookie(lang) {
+      if (!lang || lang === 'original') {
+        document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax;";
+        if (location.hostname && location.hostname.indexOf('.') !== -1) {
+          document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + location.hostname + "; SameSite=Lax;";
+          document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=." + location.hostname + "; SameSite=Lax;";
+        }
+      } else {
+        document.cookie = "googtrans=/auto/" + lang + "; path=/; SameSite=Lax;";
+        document.cookie = "googtrans=/hi/" + lang + "; path=/; SameSite=Lax;";
+        if (location.hostname && location.hostname.indexOf('.') !== -1) {
+          document.cookie = "googtrans=/auto/" + lang + "; path=/; domain=" + location.hostname + "; SameSite=Lax;";
+          document.cookie = "googtrans=/hi/" + lang + "; path=/; domain=" + location.hostname + "; SameSite=Lax;";
+          document.cookie = "googtrans=/auto/" + lang + "; path=/; domain=." + location.hostname + "; SameSite=Lax;";
+          document.cookie = "googtrans=/hi/" + lang + "; path=/; domain=." + location.hostname + "; SameSite=Lax;";
+        }
+      }
+    }
+
     function changeSiteLanguage(targetLang) {
+      setGoogleTransCookie(targetLang);
+
       if (!targetLang || targetLang === 'original') {
-        document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-        document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + location.hostname + ";";
-        window.location.reload();
+        var combo = document.querySelector('.goog-te-combo');
+        if (combo) {
+          combo.value = '';
+          combo.dispatchEvent(new Event('change'));
+        }
+        setTimeout(function() {
+          window.location.reload();
+        }, 150);
         return;
       }
-      
-      document.cookie = "googtrans=/auto/" + targetLang + "; path=/;";
-      document.cookie = "googtrans=/auto/" + targetLang + "; path=/; domain=" + location.hostname + ";";
-      
-      var combo = document.querySelector('.goog-te-combo');
-      if (combo) {
-        combo.value = targetLang;
-        combo.dispatchEvent(new Event('change'));
+
+      function triggerCombo() {
+        var combo = document.querySelector('.goog-te-combo');
+        if (combo) {
+          combo.value = targetLang;
+          combo.dispatchEvent(new Event('change'));
+          return true;
+        }
+        return false;
       }
-      setTimeout(function() {
-        window.location.reload();
-      }, 100);
+
+      if (!triggerCombo()) {
+        var attempts = 0;
+        var timer = setInterval(function() {
+          attempts++;
+          if (triggerCombo() || attempts >= 15) {
+            clearInterval(timer);
+          }
+        }, 200);
+      }
     }
+
+    // Sync changes from native Google dropdown back to our 180+ dropdown
+    document.addEventListener('change', function(e) {
+      if (e.target && e.target.classList.contains('goog-te-combo')) {
+        var val = e.target.value;
+        var sel = document.getElementById('world-lang-select');
+        if (sel && val) {
+          sel.value = val;
+        }
+        setGoogleTransCookie(val || 'original');
+      }
+    });
 
     window.addEventListener('DOMContentLoaded', function() {
       var match = document.cookie.match(/(?:^|;\s*)googtrans=([^;]+)/);
